@@ -10,72 +10,69 @@ import SwiftUI
 struct FeedCellScr: View {
     
     var quote: Quote
+    var isMainScreen: Bool //separate scr 1 and scr 18
     @Binding var showInfo: Bool
+    @Binding var showCateOnTop: Bool
     
     var body: some View {
         ZStack {
+            if showCateOnTop {
+                CateTopView(cate: quote.category)
+            }
+            
             VStack(alignment: .center) {
-                Text(quote.script)
+                Text(quote.script.isEmpty ? "Loading..." : quote.script)
                     .font(.system(size: 32))
                     .fontWeight(.regular)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(isMainScreen ? .white : .black)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                 
-                Text("-\(quote.author)")
+                Text(quote.author.isEmpty ? "" : "-\(quote.author)")
                     .font(.system(size: 20))
                     .fontWeight(.regular)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(isMainScreen ? .white : .black)
                     .padding(.top, 4)
             }
-            .offset(x: 0, y: -16) //off center a bit
+            .offset(x: 0, y: -16) //up from center a bit
             
-            VStack {
-                Spacer()
-                
-                HStack(spacing: 24) {
-                    Button {
-                        Task {
-                            await uploadQuotes()
+            if isMainScreen {
+                VStack {
+                    Spacer()
+                    
+                    HStack(spacing: 24) {
+                        Button {
+                            
+                        } label: {
+                            ThreeImgBtnLbl(imgName: "square.and.arrow.up")
                         }
-                    } label: {
-                        ThreeImgBtnLbl(imgName: "square.and.arrow.up")
-                    }
-                    Button {
-                        showInfo.toggle()
-                    } label: {
-                        ThreeImgBtnLbl(imgName: "info.circle")
-                    }
-                    Button {
                         
-                    } label: {
-                        ThreeImgBtnLbl(imgName: "heart")
+                        if !quote.author.isEmpty {
+                            Button {
+                                showInfo.toggle()
+                            } label: {
+                                ThreeImgBtnLbl(imgName: "info.circle")
+                            }
+                        }
+                        
+                        Button {
+                            
+                        } label: {
+                            ThreeImgBtnLbl(imgName: "heart")
+                        }
                     }
+                    .foregroundStyle(.white)
+                    .padding(.bottom, 160)
                 }
-                .foregroundStyle(.white)
-                .padding(.bottom, 160)
+
             }
-        }
-        .sheet(isPresented: $showInfo) {
-            InfoScreen()
         }
     }
     
-    private func uploadQuotes() async {
-        do {
-            try await ServiceUpload.share.uploadCateTitle(quote: Quote.quoteArr[0])
-            for quote in Quote.quoteArr {
-                try await ServiceUpload.share.uploadOneQuote(quote: quote)
-            }
-            print("DEBUG_2: done uploading quote")
-        } catch {
-            print("DEBUG_2: err \(error)")
-        }
-    }
 }
 
 #Preview {
-    FeedCellScr(quote: Quote.quoteArr[0], showInfo: .constant(false))
+    FeedCellScr(quote: Quote.quoteFirst, isMainScreen: true, showInfo: .constant(false), showCateOnTop: .constant(true))
 }
 
 //MARK: -----------------------------------------------
@@ -99,5 +96,25 @@ struct ThreeImgBtnLbl: View {
                 .frame(width: btnDim, height: btnDim)
         }
         
+    }
+}
+
+struct CateTopView: View {
+    
+    var cate: String
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text(cate)
+                    .font(.system(size: 12))
+                    .fontWeight(.regular)
+                    .foregroundStyle(.white)
+                    .padding()
+                    .padding(.top, 44)
+                Spacer()
+            }
+            Spacer()
+        }
     }
 }

@@ -16,19 +16,24 @@ func findCharPos(needle: Character, str: String) -> Int {
     }
 }
 
+func randomString(length: Int) -> String {
+    let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" //length = 62
+    return String((0..<length).map{ _ in letters.randomElement()! })
+}
+
 func randIntArr(title: String, cate: String) async throws -> [Int] {
     
     var arr: [Int] = []
     let count = await ServiceFetch.shared.fetchQuoteCount(title: title, cate: cate)
     
     if count >= 1 { //in case part of database got deleted
-        for _ in 1...4 {
+        for _ in 1...5 {
             let rand = Int.random(in: 1..<count)
             arr.append(rand)
         }
         return arr.removingDuplicates()
     } else {
-        print("DEBUG_Helpers: count is \(count)")
+        print("DEBUG_Universal_func: count is \(count)")
         return [1]
     }
     

@@ -23,7 +23,7 @@ enum Cate6_Sport: CaseIterable {
         case .health:
             return "Health"
         case .competition:
-            return "competition"
+            return "Competition"
         case .weightLoss:
             return "Weight loss"
         case .gym:

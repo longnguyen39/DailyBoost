@@ -7,8 +7,7 @@
 
 import Foundation
 
-enum Cate: CaseIterable {
-    case zero
+enum CateTitle: CaseIterable {
     case one
     case two
     case three
@@ -20,8 +19,7 @@ enum Cate: CaseIterable {
     
     var title: String {
         switch self {
-        case .zero:
-            return "For you"
+
         case .one:
             return "Love yourself"
         case .two:

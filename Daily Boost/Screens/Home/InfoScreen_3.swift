@@ -6,14 +6,63 @@
 //
 
 import SwiftUI
+import WebKit
 
 struct InfoScreen: View {
     
+    @Binding var showInfo: Bool
+    @Binding var quoteInfo: Quote
+    
     var body: some View {
-        Text("Info here")
+        VStack {
+            HStack {
+                Button {
+                    showInfo.toggle()
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .imageScale(.large)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.red)
+                        .padding()
+                }
+                Spacer()
+                
+                Text("Author's info")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .padding()
+            }
+            .padding(.bottom, -4)
+            
+            WebView(urlStr: "https://www.google.com/search?q=\(authorStr())")
+        }
+    }
+    
+    private func authorStr() -> String {
+        return quoteInfo.author.replacingOccurrences(of: " ", with: "+")
     }
 }
 
 #Preview {
-    InfoScreen()
+    InfoScreen(showInfo: .constant(true), quoteInfo: .constant(Quote.quoteFirst))
+}
+
+//MARK: ---------------------------------------------
+
+struct WebView: UIViewRepresentable{
+    
+    var urlStr:String
+    
+    func makeUIView(context: Context) -> some UIView {
+        guard let url = URL(string: urlStr) else {
+            return WKWebView()
+        }
+        let webview = WKWebView()
+        webview.load(URLRequest(url: url))
+        return webview
+    }
+    
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        
+    }
 }

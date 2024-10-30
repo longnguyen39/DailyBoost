@@ -1,20 +1,21 @@
 //
-//  UploadQuote.swift
+//  HelperUploadQuotes.swift
 //  Daily Boost
 //
-//  Created by Long Nguyen on 5/26/24.
+//  Created by Long Nguyen on 9/1/24.
 //
 
 import SwiftUI
 import Firebase
 import FirebaseFirestoreSwift
 
-class ServiceUpload {
+class HelperUploadQuotes {
     
-    static let share = ServiceUpload()
+    static let share = HelperUploadQuotes()
     
 //MARK: - Function
     
+    //call this first, then uploadOneQuote later
     func uploadCateTitle(quote: Quote) async throws {
         let DB_QUOTE = Firestore.firestore().collection(quote.title)
         let uploadCate = DB_QUOTE.document(quote.category)
@@ -37,9 +38,4 @@ class ServiceUpload {
         try? await uploadQuote.setData(encodedQuote)
     }
     
-}
-
-func randomString(length: Int) -> String {
-    let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" //length = 62
-    return String((0..<length).map{ _ in letters.randomElement()! })
 }

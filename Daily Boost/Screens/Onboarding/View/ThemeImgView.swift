@@ -7,20 +7,17 @@
 
 import SwiftUI
 
-struct BackBtnView: View {
+struct ThemeImgView: View {
         
     var body: some View {
-        HStack {
-            Image(systemName: "chevron.left")
-                .imageScale(.large)
-                .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            
-            Spacer()
-        }
+        Image("wall1")
+            .resizable()
+            .frame(width: UIScreen.width, height: 360)
+            .scaledToFit()
+            .ignoresSafeArea()
     }
 }
 
 #Preview {
-    BackBtnView()
+    ThemeImgView()
 }

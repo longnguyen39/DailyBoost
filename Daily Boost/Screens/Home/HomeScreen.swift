@@ -8,8 +8,10 @@
 import SwiftUI
 import WebKit
 
+@MainActor //main thread
 struct HomeScreen: View {
     
+    @AppStorage(UserDe.show_top_left) var show_top_left: Bool?
     @StateObject var vm = HomeScreenVM()
     
     var body: some View {
@@ -24,10 +26,12 @@ struct HomeScreen: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(vm.quoteArr, id: \.self) { quote in
-                            FeedCellScr(quote: quote, isMainScreen: true, showInfo: $vm.showInfo)
+                            FeedCellScr(quote: quote, isMainScreen: true, showInfo: $vm.showInfo, showCateOnTop: $vm.showCateTopLeft)
                                 .frame(width: UIScreen.width, height: UIScreen.height)
                                 .onAppear {
-                                    vm.cellAppear(quote: quote)
+                                    Task {
+                                       await vm.cellAppear(quote: quote)
+                                    }
                                 } //cell appear after each swipe
                         }
                     }
@@ -37,6 +41,7 @@ struct HomeScreen: View {
                 .ignoresSafeArea()
                 .onAppear {
                     Task {
+                        vm.showCateTopLeft = show_top_left ?? true
                         await vm.screenAppear()
                     }
                 }
@@ -79,9 +84,13 @@ struct HomeScreen: View {
                 .padding()
             }
             .padding()
+            
+            if vm.showLoading {
+                LoadingView()
+            }
         }
         .fullScreenCover(isPresented: $vm.showCate) {
-            CategoryScreen(showCate: $vm.showCate, chosenCatePathArr: $vm.chosenCatePathArr, refetch: $vm.refetch)
+            CategoryScreen(showCate: $vm.showCate, chosenCatePathArr: $vm.chosenCatePathArr, refetch: $vm.refetch, showCateTopLeft: $vm.showCateTopLeft)
         }
         .fullScreenCover(isPresented: $vm.showSetting) {
             SettingScreen(showSetting: $vm.showSetting)

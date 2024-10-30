@@ -15,19 +15,21 @@ enum Cate1_LoveSelf: CaseIterable {
     case confidence
     case ego
     case beYourself
-    case positiveThought
+    case positivity
     case newStart
     case moveOn
     case growth
     case gratitude
     case selfDoubt
+    case women
+    case men
     
     var name: String {
         switch self {
         case .motivation:
             return "Motivation"
         case .badassMotiv:
-            return "Badass"
+            return "Badass quotes"
         case .mindfulness:
             return "Mindfulness"
         case .selfLove:
@@ -38,7 +40,7 @@ enum Cate1_LoveSelf: CaseIterable {
             return "Ego"
         case .beYourself:
             return "Be Yourself"
-        case .positiveThought:
+        case .positivity:
             return "Positivity"
         case .newStart:
             return "New start"
@@ -50,6 +52,10 @@ enum Cate1_LoveSelf: CaseIterable {
             return "Gratitude"
         case .selfDoubt:
             return "Self-doubt"
+        case .women:
+            return "Women empowerment"
+        case .men:
+            return "Be a man"
         }
     }
 }

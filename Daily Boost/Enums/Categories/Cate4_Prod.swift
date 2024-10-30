@@ -8,6 +8,7 @@
 import Foundation
 
 enum Cate4_Prod: CaseIterable {
+    
     case habit
     case routine
     case entrepreneur
@@ -20,6 +21,7 @@ enum Cate4_Prod: CaseIterable {
     case money
     case hustling
     case discipline
+    case failure
     
     var name: String {
         switch self {
@@ -36,7 +38,7 @@ enum Cate4_Prod: CaseIterable {
         case .work:
             return "Work"
         case .college:
-            return "Habit"
+            return "College"
         case .success:
             return "Success"
         case .wealth:
@@ -47,35 +49,8 @@ enum Cate4_Prod: CaseIterable {
             return "Hustling"
         case .discipline:
             return "Discipline"
+        case .failure:
+            return "Failure"
         }
     }
-    
-//    var imgStr: String {
-//        switch self {
-//        case .habit:
-//            <#code#>
-//        case .routine:
-//            <#code#>
-//        case .entrepreneur:
-//            <#code#>
-//        case .productivity:
-//            <#code#>
-//        case .focus:
-//            <#code#>
-//        case .work:
-//            <#code#>
-//        case .college:
-//            <#code#>
-//        case .success:
-//            <#code#>
-//        case .wealth:
-//            <#code#>
-//        case .money:
-//            <#code#>
-//        case .hustling:
-//            <#code#>
-//        case .discipline:
-//            <#code#>
-//        }
-//    }
 }

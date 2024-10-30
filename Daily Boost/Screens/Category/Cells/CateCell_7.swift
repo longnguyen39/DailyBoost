@@ -14,8 +14,8 @@ struct CateCell: View {
     
     var cateP: String
     @Binding var chosenCatePathArr: [String]
-    @Binding var removeCateForYou: String
-    @Binding var addCateForYou: String
+    @Binding var removeCateForYou: String //for color
+    @Binding var addCateForYou: String //for color
     @Binding var showCateQuotes: Bool
 
     @State var mainColor: Color = .clear
@@ -90,15 +90,16 @@ struct CateCell: View {
     }
     
     private func pickCate(catePath: String) {
-        var didChange = false
+        var didRemove = false
         for cateP in chosenCatePathArr {
             if cateP.getCate() == catePath.getCate() {
-                chosenCatePathArr = chosenCatePathArr.filter() { $0.getCate() != catePath.getCate() } //remove picked cateP
-                didChange = true
+                chosenCatePathArr = chosenCatePathArr.filter() { $0.getCate() != catePath.getCate()
+                } //remove picked cateP
+                didRemove = true
                 break
             }
         }
-        if !didChange {
+        if !didRemove {
             chosenCatePathArr.append(catePath)
         }
     }

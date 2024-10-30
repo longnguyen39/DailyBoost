@@ -11,8 +11,7 @@ enum Cate7_Calm: CaseIterable {
     case sleep
     case calm
     case anxiety
-    case peaceMind
-    case patience
+    case perseverance
     case stress
     case smile
     case creative
@@ -25,10 +24,8 @@ enum Cate7_Calm: CaseIterable {
             return "Calm"
         case .anxiety:
             return "Anxiety"
-        case .peaceMind:
-            return "Peace"
-        case .patience:
-            return "Patience"
+        case .perseverance:
+            return "Perseverance"
         case .stress:
             return "Stress"
         case .smile:

@@ -10,7 +10,7 @@ import Foundation
 enum Cate5_Relation: CaseIterable {
     case trust
     case honesty
-    case fogive
+    case forgive
     case introvert
     case extrovert
     case love
@@ -20,6 +20,7 @@ enum Cate5_Relation: CaseIterable {
     case loyalty
     case beSingle
     case fakePeople
+    case teamwork
     
     var name: String {
         switch self {
@@ -27,7 +28,7 @@ enum Cate5_Relation: CaseIterable {
             return "Trust"
         case .honesty:
             return "Honesty"
-        case .fogive:
+        case .forgive:
             return "Forgiveness"
         case .introvert:
             return "Introvert"
@@ -47,35 +48,8 @@ enum Cate5_Relation: CaseIterable {
             return "Being single"
         case .fakePeople:
             return "Fake people"
+        case .teamwork:
+            return "Teamwork"
         }
     }
-    
-//    var imgStr: String {
-//        switch self {
-//        case .trust:
-//            <#code#>
-//        case .honesty:
-//            <#code#>
-//        case .fogive:
-//            <#code#>
-//        case .introvert:
-//            <#code#>
-//        case .extrovert:
-//            <#code#>
-//        case .love:
-//            <#code#>
-//        case .friendship:
-//            <#code#>
-//        case .family:
-//            <#code#>
-//        case .parenthood:
-//            <#code#>
-//        case .loyalty:
-//            <#code#>
-//        case .beSingle:
-//            <#code#>
-//        case .fakePeople:
-//            <#code#>
-//        }
-//    }
 }

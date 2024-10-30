@@ -7,12 +7,22 @@
 
 import SwiftUI
 
-struct ContinueBtn: View {
+struct ContBtnView: View {
+    
+    var context: String = "Continue"
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text(context)
+            .font(.headline)
+            .fontWeight(.medium)
+            .foregroundStyle(.black)
+            .frame(width: UIScreen.width-80, height: 60)
+            .background(.yellow)
+            .clipShape(.capsule)
+            .padding()
     }
 }
 
 #Preview {
-    ContinueBtn()
+    ContBtnView()
 }

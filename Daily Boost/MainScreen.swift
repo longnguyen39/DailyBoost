@@ -7,8 +7,15 @@
 
 import SwiftUI
 
+//DELETE all userD
+//let defaultDict = UserDefaults.standard.dictionaryRepresentation()
+//defaultDict.keys.forEach { key in
+//    UserDefaults.standard.removeObject(forKey: key)
+//}
+
 struct MainScreen: View {
     
+    //we only need either var firstTime or userID in UserDe, we include firstTime to know how to deal with Environment var
     @StateObject var firstTime = FirstTime()
     
     var body: some View {
@@ -18,8 +25,14 @@ struct MainScreen: View {
             } else {
                 HomeScreen()
             }
+//            UploadScreen()
         }
-        .environmentObject(firstTime)        
+        .environmentObject(firstTime)
+        .onAppear {
+            if let fTime = UserDefaults.standard.object(forKey: UserDe.first_time) {
+                firstTime.isFirstTime = fTime as! Bool
+            }
+        }
     }
 }
 

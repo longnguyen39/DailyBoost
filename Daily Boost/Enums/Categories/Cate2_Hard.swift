@@ -33,7 +33,7 @@ enum Cate2_Hard: CaseIterable {
         case .overFear:
             return "Fear"
         case .beStrong:
-            return "Be_strong"
+            return "Be strong"
         case .change:
             return "Adaptation"
         case .loneliness:
