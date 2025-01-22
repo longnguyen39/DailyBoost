@@ -62,7 +62,7 @@ struct WidgetScreen: View {
             Spacer()
             
             NavigationLink {
-                PaywallScreen(user: $user, pickedCateArr: $pickedCateArr)
+                EmailScreen(user: $user, pickedCateArr: $pickedCateArr)
             } label: {
                 ContBtnView(context: "Got it!")
             }
@@ -73,7 +73,7 @@ struct WidgetScreen: View {
 }
 
 #Preview {
-    WidgetScreen(user: .constant(User.emptyState), pickedCateArr: .constant(Quote.purposeStrArr))
+    WidgetScreen(user: .constant(User.initState), pickedCateArr: .constant(Quote.purposeStrArr))
 }
 
 //-------------------------------------------------

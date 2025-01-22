@@ -5,7 +5,7 @@
 //  Created by Long Nguyen on 8/23/24.
 //
 
-import Foundation
+import UIKit
 
 func findCharPos(needle: Character, str: String) -> Int {
     if let idx = str.firstIndex(of: needle) {
@@ -21,21 +21,17 @@ func randomString(length: Int) -> String {
     return String((0..<length).map{ _ in letters.randomElement()! })
 }
 
-func randIntArr(title: String, cate: String) async throws -> [Int] {
-    
-    var arr: [Int] = []
-    let count = await ServiceFetch.shared.fetchQuoteCount(title: title, cate: cate)
-    
-    if count >= 1 { //in case part of database got deleted
-        for _ in 1...5 {
-            let rand = Int.random(in: 1..<count)
-            arr.append(rand)
-        }
-        return arr.removingDuplicates()
-    } else {
-        print("DEBUG_Universal_func: count is \(count)")
-        return [1]
-    }
-    
-}
 
+func loadThemeImgFromDisk(path: String) -> UIImage {
+    let documentDirectory = FileManager.SearchPathDirectory.documentDirectory
+    
+    let userDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+    let paths = NSSearchPathForDirectoriesInDomains(documentDirectory, userDomainMask, true)
+    
+    if let dirPath = paths.first {
+        let imageUrl = URL(fileURLWithPath: dirPath).appendingPathComponent(path)
+        let image = UIImage(contentsOfFile: imageUrl.path)
+        return image ?? UIImage(named: "wall1")!
+    }
+    return UIImage(named: "wall1")!
+}

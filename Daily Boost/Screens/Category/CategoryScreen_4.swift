@@ -14,62 +14,64 @@ struct CategoryScreen: View {
     @Binding var showCate: Bool
     @Binding var chosenCatePathArr: [String]
     @Binding var refetch: Bool
-    @Binding var showCateTopLeft: Bool
     
 //    @State var searchText: String = ""
 //    @State var searchIsActive = false
     
-    @State var showFictions: Bool = true
-    @State var showCateQuotes: Bool = false
+    @State var showCateQuotesScr: Bool = false
+    @State var isChanged: Bool = false
     
     @State var removeCateForYou: String = ""
     @State var addCateForYou: String = ""
+    
+    @State var fictionPicked: FictionOption = .both
     
     var body: some View {
         NavigationView {
             VStack {
                 ScrollView {
-                    ToggleSection(showFictions: $showFictions, showCateTopLeft: $showCateTopLeft)
+                    FictionSection(fictionPicked: $fictionPicked, isChanged: $isChanged)
                         .padding()
                     
-                    YourCateHScrollV(chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, showCateQuotes: $showCateQuotes)
+                    YourCateHScrollV(chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, showCateQuotes: $showCateQuotesScr)
                         .padding(.bottom)
+                        .padding(.top, 8)
                     
                     ForEach(CateTitle.allCases, id: \.self) { order in
-                        CateHScrollV(caseOrder: order, chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, addCateForYou: $addCateForYou, showCateQuotes: $showCateQuotes)
+                        CateHScrollV(caseOrder: order, chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, addCateForYou: $addCateForYou, showCateQuotes: $showCateQuotesScr)
                     }
                 }
                 
                 Button {
-                    print("DEBUG_4: cate chosen is \(chosenCatePathArr.count)")
-                    
-                    //upload new arr to database
                     Task {
-                        try await ServiceUpload.shared.updateCatePathArr(userID: userID ?? "nil", cateArr: chosenCatePathArr)
-                        
-                        //refetch quoteArr in HomeScr
-                        refetch.toggle()
-                        showCate.toggle()
+                        await saveChanges()
                     }
                 } label: {
-                    Text("Show \(chosenCatePathArr.count) categories")
-                        .font(.headline)
+                    ThemeBtnView(context: "Show \(chosenCatePathArr.count) categories")
                         .fontWeight(.medium)
-                        .foregroundStyle(.black)
-                        .frame(width: UIScreen.width-32, height: 48)
-                        .background(.yellow)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }
             .navigationTitle("Category")
             .navigationBarTitleDisplayMode(.inline)
-            .fullScreenCover(isPresented: $showCateQuotes) {
-                CateQuotesScreen(showCateQuotes: $showCateQuotes, chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, addCateForYou: $addCateForYou)
+            .onAppear {
+                setFictionPicked()
+            }
+            .onChange(of: chosenCatePathArr) { _ in
+                isChanged = true
+            }
+            .fullScreenCover(isPresented: $showCateQuotesScr) {
+                CateQuotesScreen(showCateQuotesScr: $showCateQuotesScr, chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, addCateForYou: $addCateForYou)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        showCate.toggle()
+                        if isChanged {
+                            Task {
+                                await saveChanges()
+                            }
+                        } else {
+                            showCate.toggle()
+                        }
                     } label: {
                         Image(systemName: "chevron.down")
                             .imageScale(.large)
@@ -81,10 +83,34 @@ struct CategoryScreen: View {
         } //nav
 //        .searchable(text: $searchText, isPresented: $searchIsActive)
     }
+    
+    private func setFictionPicked() {
+        let optionName = UserDefaults.standard.object(forKey: UserDe.fictionOption) as? String ?? ""
+        
+        if optionName == FictionOption.nonFiction.name {
+            fictionPicked = .nonFiction
+        } else if optionName == FictionOption.fiction.name {
+            fictionPicked = .fiction
+        } else {
+            fictionPicked = .both
+        }
+    }
+    
+    private func saveChanges() async {
+        print("DEBUG_4: cate chosen is \(chosenCatePathArr.count)")
+        
+        //upload new arr to database
+        UserDefaults.standard.set(fictionPicked.name, forKey: UserDe.fictionOption)
+        await ServiceUpload.shared.updateCatePathArr(userID: userID ?? "nil", cateArr: chosenCatePathArr)
+        
+        //refetch quoteArr in HomeScr
+        refetch.toggle()
+        showCate.toggle()
+    }
 }
 
 #Preview {
-    CategoryScreen(showCate: .constant(false), chosenCatePathArr: .constant(Quote.purposeStrArr), refetch: .constant(false), showCateTopLeft: .constant(false))
+    CategoryScreen(showCate: .constant(false), chosenCatePathArr: .constant(Quote.purposeStrArr), refetch: .constant(false))
 }
 
 //MARK: ------------------------------------------------
@@ -98,7 +124,7 @@ struct YourCateHScrollV: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack {
-                Text("Your categories")
+                Text("Your categories (\(chosenCatePathArr.count))")
                     .font(.title3)
                     .fontWeight(.semibold)
                     .padding(.horizontal)
@@ -121,33 +147,29 @@ struct YourCateHScrollV: View {
 
 //MARK: ------------------------------------------------
 
-struct ToggleSection: View {
+struct FictionSection: View {
     
-    @Binding var showFictions: Bool
-    @Binding var showCateTopLeft: Bool
+    @Binding var fictionPicked: FictionOption
+    @Binding var isChanged: Bool
     
     var body: some View {
         VStack {
-            HStack {
-                Text("*Include quotes from famous fictional figures")
-                    .font(.caption)
-                    .fontWeight(.regular)
-                    .foregroundStyle(.gray)
-                Spacer()
-            }
-            .padding(.horizontal)
+            CaptionView(context: "Includes quotes from famous fictional or non-fictional figures, or both.")
             .padding(.top, 12)
             
-            Toggle("Include Fictions", isOn: $showFictions)
-                .tint(.yellow)
-                .fontWeight(.medium)
-                .padding(.horizontal)
-                .padding(.bottom)
+            FictionRow(fictionOption: .fiction, fictionPicked: $fictionPicked, isChanged: $isChanged).padding(.top, 4)
+            Divider()
+                .padding(.horizontal, 64)
+                .padding(.bottom, 8)
+                .opacity(0.7)
             
-            Toggle("Show Category", isOn: $showCateTopLeft)
-                .tint(.yellow)
-                .fontWeight(.medium)
-                .padding(.horizontal)
+            FictionRow(fictionOption: .nonFiction, fictionPicked: $fictionPicked, isChanged: $isChanged).padding(.bottom, 8)
+            Divider()
+                .padding(.horizontal, 64)
+                .padding(.bottom, 8)
+                .opacity(0.7)
+            
+            FictionRow(fictionOption: .both, fictionPicked: $fictionPicked, isChanged: $isChanged)
                 .padding(.bottom)
         }
         .overlay {
@@ -156,9 +178,53 @@ struct ToggleSection: View {
                 .foregroundStyle(Color(.systemGray4))
                 .shadow(color: .black.opacity(0.4), radius: 2)
         }
-        .onChange(of: showCateTopLeft) { _ in
-            UserDefaults.standard.set(showCateTopLeft, forKey: UserDe.show_top_left)
-        }
     }
 }
 
+struct FictionRow: View {
+    
+    @AppStorage(currentUserDefaults.userID) var userID: String?
+    var fictionOption: FictionOption
+    
+    @Binding var fictionPicked: FictionOption
+    @Binding var isChanged: Bool
+    
+    var body: some View {
+        Button {
+            fictionPicked = fictionOption
+            Task {
+                await updateFictionOption()
+                isChanged = true
+            }
+        } label: {
+            HStack {
+                Text(fictionOption.name)
+                    .font(.headline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(isPicked() ? .gray : .black)
+                Spacer()
+                
+                Image(systemName: "checkmark")
+                    .resizable()
+                    .frame(width: 10, height: 10)
+                    .fontWeight(.medium)
+                    .foregroundStyle(isPicked() ? .black : .clear)
+                    .padding(.all, 8)
+                    .background(isPicked() ? .yellow : .clear)
+                    .clipShape(.circle)
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    //MARK: - Function
+    
+    private func isPicked() -> Bool {
+        return fictionPicked == fictionOption
+    }
+    
+    private func updateFictionOption() async {
+        let uid = userID ?? ""
+        await ServiceUpload.shared.updateFictionOption(userID: uid, opt: fictionPicked.name)
+    }
+}

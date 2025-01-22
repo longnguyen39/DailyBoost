@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct ThemeImgView: View {
-        
+    
+    var imgName: String = "wall1s"
+    
     var body: some View {
-        Image("wall1")
+        Image(imgName)
             .resizable()
             .frame(width: UIScreen.width, height: 360)
-            .scaledToFit()
+            .scaledToFill()
             .ignoresSafeArea()
     }
 }

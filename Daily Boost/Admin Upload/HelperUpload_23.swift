@@ -8,24 +8,20 @@
 import SwiftUI
 import Firebase
 import FirebaseFirestoreSwift
+import FirebaseStorage
 
-class HelperUploadQuotes {
+class HelperUpload {
     
-    static let share = HelperUploadQuotes()
+    static let shared = HelperUpload()
     
-//MARK: - Function
+//MARK: - Quote
     
     //call this first, then uploadOneQuote later
     func uploadCateTitle(quote: Quote) async throws {
         let DB_QUOTE = Firestore.firestore().collection(quote.title)
         let uploadCate = DB_QUOTE.document(quote.category)
         try? await uploadCate.setData([
-            DB_CateTitle_count: quote.orderNo,
-            DB_CateTitle_fiction: 0,
-            DB_CateTitle_nonf: 0,
-            DB_CateTitle_authCount: 0,
-            DB_CateTitle_Ano: 0,
-            DB_CateTitle_time: Date.now,
+            "last-updated": Date.now,
         ])
     }
     

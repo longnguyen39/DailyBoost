@@ -233,6 +233,8 @@ extension String {
             return Cate5_Relation.fakePeople.name
         } else if order == "12" {
             return Cate5_Relation.teamwork.name
+        } else if order == "13" {
+            return Cate5_Relation.loyalty.name
         } else {
             return ""
         }
@@ -277,6 +279,8 @@ extension String {
             return Cate7_Calm.smile.name
         } else if order == "7" {
             return Cate7_Calm.creative.name
+        } else if order == "8" {
+            return Cate7_Calm.harsh.name
         } else {
             return ""
         }

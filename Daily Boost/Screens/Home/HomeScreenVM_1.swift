@@ -11,6 +11,7 @@ import SwiftUI
 class HomeScreenVM: ObservableObject {
     
     @AppStorage(currentUserDefaults.userID) var userID: String? //this on constantly pull data from userDefaults (if data from userDefaults change, it also changes live)
+    @Published var user: User = User.initState
     
     @Published var quoteArr = [Quote.quoteFirst]
     @Published var chosenCatePathArr: [String] = [] //ex: "Productivity/Discipline"
@@ -29,6 +30,16 @@ class HomeScreenVM: ObservableObject {
     
     //MARK: - Function Appear
     
+    func fetchUser() async {
+        let uid = userID ?? ""
+        do {
+            user = try await         ServiceFetch.shared.fetchUserInfo(userID: uid)
+        } catch {
+            let e = error.localizedDescription
+            print("DEBUG_1: err \(e)")
+        }
+    }
+    
     func screenAppear() async {
         showLoading = true
         
@@ -44,7 +55,7 @@ class HomeScreenVM: ObservableObject {
             //save last_fetched_quote for pagination
             UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.last_fetched_Q)
             
-            try? await Task.sleep(nanoseconds: 0_200_000_000)//delay
+            try? await Task.sleep(nanoseconds: 0_100_000_000)//delay
             showLoading = false
             
         } else {
@@ -63,15 +74,13 @@ class HomeScreenVM: ObservableObject {
         
         UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.last_fetched_Q)
         
-        try? await Task.sleep(nanoseconds: 0_200_000_000)//delay
+        try? await Task.sleep(nanoseconds: 0_100_000_000)//delay
         showLoading = false
     }
     
     func cellAppear(quote: Quote) async {
         let quoteID = "\(quote.title)/\(quote.category)#\(quote.orderNo)"
-        let uid = userID ?? "nil"
-        
-        print("DEBUG_1: presenting quote \(quoteID)")
+        print("DEBUG_1: presenting quote: \(quoteID)")
         self.quoteInfo = quote //to properly display InfoScr
         
         //config welcome message
@@ -80,14 +89,23 @@ class HomeScreenVM: ObservableObject {
         }
         
         //configure histArr
+        await configHistArr(quote: quote, id: quoteID)
+        
+        //check for last-fetched quote b4 fetching new quotes
+        await checkLastQuote(quote: quote)
+    }
+    
+    private func configHistArr(quote: Quote, id: String) async {
+        let uid = userID ?? "nil"
+        
         if quote.orderNo != 0 {
-            let arr = histArr.filter { $0 == quoteID }
+            let arr = histArr.filter { $0 == id }
             if arr.isEmpty { //no dupl
-                histArr.append(quoteID)
+                histArr.append(id)
                 
                 if histArr.count > DB_QUOTE_HIST {
                     histArr.removeFirst()
-                    print("DEBUG_1: just add new quote to hist, histArr count \(histArr.count)")
+                    print("DEBUG_1: histArr count \(histArr.count) after just adding new quote")
                 }
                 //update to DB
                 if histArr.count > 0 {
@@ -98,20 +116,27 @@ class HomeScreenVM: ObservableObject {
                 print("DEBUG_1: dupl, histArr no change")
             }
         }
-        
-        //check for last-fetched quote b4 fetching new quotes
+    }
+    
+    private func checkLastQuote(quote: Quote) async {
         let last = UserDefaults.standard.object(forKey: UserDe.last_fetched_Q) as? String ?? "nil"
         if quote.script == last {
             print("DEBUG_1: this is the last quote")
             
             //fetch new arr of quotes (with hist check)
+            var displayQuoteArr = await newlyFetchedQ()
+            displayQuoteArr = filterFromHist(arrNeedFilter: displayQuoteArr)
+            quoteArr += displayQuoteArr.shuffled()
+            print("DEBUG_1: New fetch! Check hist! adding \(displayQuoteArr.count) quotes, now having \(quoteArr.count) quotes")
             
+            //save last_fetched_quote for pagination
+            UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.last_fetched_Q)
         }
     }
     
     //MARK: - FUNCTIONS
     
-    func displayQuotes() async {
+    private func displayQuotes() async {
         
         //remove welcome message
         let didWelcome = UserDefaults.standard.object(forKey: UserDe.did_welcome) as? Bool ?? false
@@ -122,24 +147,13 @@ class HomeScreenVM: ObservableObject {
         //fetch quotePath
         chosenCatePathArr = await ServiceFetch.shared.fetchCatePath(userID: userID ?? "nil")
         
-        var displayQuoteArr = [Quote]()
-        for catePath in chosenCatePathArr {
-            let arr = await ServiceFetch.shared.fetchQuotesFromACate(title: catePath.getTitle(), cate: catePath.getCate())
-            displayQuoteArr += arr
-        }
+        //attach newly fetched quotes to quoteArr
+        let displayQuoteArr = await newlyFetchedQ()
         quoteArr += displayQuoteArr.shuffled()
         
         //subtract from histArr
-        for quote in quoteArr {
-            let qID = "\(quote.title)/\(quote.category)#\(quote.orderNo)"
-            let arr = histArr.filter { $0 == qID }
-            if !arr.isEmpty {  //found in histArr
-                print("DEBUG_1: founded \(qID) in histArr, subtract!")
-                quoteArr = quoteArr.filter { "\($0.title)/\($0.category)#\($0.orderNo)" != qID }
-            }
-        }
-        quoteArr = quoteArr.shuffled() //more shuffle after hist check for randomness
-        print("DEBUG_1: after checking hist, now displaying \(quoteArr.count) quotes")
+        quoteArr = filterFromHist(arrNeedFilter: quoteArr).shuffled() //more shuffle after hist check for randomness
+        print("DEBUG_1: displaying \(quoteArr.count) quotes after checking hist")
         
         //check for empty quoteArr (user chooses no cate)
         if quoteArr.count == 0 {
@@ -147,5 +161,27 @@ class HomeScreenVM: ObservableObject {
         }
     }
     
+    private func newlyFetchedQ() async -> [Quote] {
+        var displayQuoteArr = [Quote]()
+        for catePath in chosenCatePathArr {
+            let arr = await ServiceFetch.shared.fetchQuotesFromACate(title: catePath.getTitle(), cate: catePath.getCate())
+            displayQuoteArr += arr
+        }
+        return displayQuoteArr.shuffled()
+    }
+    
+    private func filterFromHist(arrNeedFilter: [Quote]) -> [Quote] {
+        var arrFiltering = arrNeedFilter //arrNeedFilter cannot be changed
+        
+        for quote in arrFiltering {
+            let qID = "\(quote.title)/\(quote.category)#\(quote.orderNo)"
+            let arr = histArr.filter { $0 == qID }
+            if !arr.isEmpty {  //found in histArr
+                print("DEBUG_1: founded \(qID) in histArr, subtract!")
+                arrFiltering = arrFiltering.filter { "\($0.title)/\($0.category)#\($0.orderNo)" != qID }
+            }
+        }
+        return arrFiltering
+    }
     
 }

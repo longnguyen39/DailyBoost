@@ -70,6 +70,7 @@ import Foundation
   5.10  Cate5_Relation beSingle
   5.11  Cate5_Relation fakePeople
   5.12  Cate5_Relation teamwork
+  5.13  Cate5_Relation loyalty
   
   6.1   Cate6_Sport Health
   6.2   Cate6_Sport Competition
@@ -88,6 +89,7 @@ import Foundation
   7.5   Cate7_Calm stress
   7.6   Cate7_Calm smile
   7.7   Cate7_Calm creative
+  7.8   Cate7_Calm harsh
   
   8.1   Cate8_Zodiac virgo
   8.2   Cate8_Zodiac aries
@@ -110,13 +112,36 @@ import Foundation
 
 struct Quotes {
     
-    //use '*' to separate script and author
+//MARK: Quote report
+//---------------------------------------------------------
+    var sumTitle1: Int
+    var sumTitle2: Int
+    var sumTitle3: Int
+    var sumTitle4: Int
+    var sumTitle5: Int
+    var sumTitle6: Int
+    var sumTitle7: Int
+    var sumTitle8: Int
+    var sumAllTitle: Int
+    
+    static let sumInit: Quotes = Quotes(sumTitle1: 0, sumTitle2: 0, sumTitle3: 0, sumTitle4: 0, sumTitle5: 0, sumTitle6: 0, sumTitle7: 0, sumTitle8: 0, sumAllTitle: 0)
+//---------------------------------------------------------
+
+    
+    //Now, we are uploading FICTIONAL quotes
+    static func getFictionOrNot() {
+        isUploadingFiction = true
+    }
     static let quoteUploadArr: [String] = [
         
+        //template:
         //"1.3>Someone’s sitting in the shade today because someone planted a tree a long time ago.*Warren Buffet",
         
-        
+        "6.8>Just keep swimming.*Dory (Finding Nemo)"
 
+        
+        
+        
     ]
     
 }

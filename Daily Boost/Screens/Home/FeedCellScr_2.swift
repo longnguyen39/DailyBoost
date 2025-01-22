@@ -9,10 +9,14 @@ import SwiftUI
 
 struct FeedCellScr: View {
     
+    @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
+    @AppStorage(currentUserDefaults.userID) var userID: String?
+    
     var quote: Quote
-    var isMainScreen: Bool //separate scr 1 and scr 18
     @Binding var showInfo: Bool
     @Binding var showCateOnTop: Bool
+    
+    @State var isLiked: Bool = false
     
     var body: some View {
         ZStack {
@@ -24,55 +28,90 @@ struct FeedCellScr: View {
                 Text(quote.script.isEmpty ? "Loading..." : quote.script)
                     .font(.system(size: 32))
                     .fontWeight(.regular)
-                    .foregroundStyle(isMainScreen ? .white : .black)
+                    .foregroundStyle(isDarkText ?? false ? .black : .white)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                 
                 Text(quote.author.isEmpty ? "" : "-\(quote.author)")
                     .font(.system(size: 20))
                     .fontWeight(.regular)
-                    .foregroundStyle(isMainScreen ? .white : .black)
+                    .foregroundStyle(isDarkText ?? false ? .black : .white)
                     .padding(.top, 4)
+                    .padding(.horizontal)
             }
             .offset(x: 0, y: -16) //up from center a bit
             
-            if isMainScreen {
-                VStack {
-                    Spacer()
+            VStack {
+                Spacer()
+                
+                HStack(spacing: 24) {
                     
-                    HStack(spacing: 24) {
+                    ShareLink(item: quoteToShare(), preview: SharePreview("Share Quote", image: quoteToShare())) {
+                        ThreeImgBtnLbl(imgName: "square.and.arrow.up")
+                            .foregroundStyle(isDarkText ?? false ? .black : .white)
+                    }
+                    
+                    if !quote.author.isEmpty {
                         Button {
-                            
+                            showInfo.toggle()
                         } label: {
-                            ThreeImgBtnLbl(imgName: "square.and.arrow.up")
-                        }
-                        
-                        if !quote.author.isEmpty {
-                            Button {
-                                showInfo.toggle()
-                            } label: {
-                                ThreeImgBtnLbl(imgName: "info.circle")
-                            }
-                        }
-                        
-                        Button {
-                            
-                        } label: {
-                            ThreeImgBtnLbl(imgName: "heart")
+                            ThreeImgBtnLbl(imgName: "info.circle")
+                                .foregroundStyle(isDarkText ?? false ? .black : .white)
                         }
                     }
-                    .foregroundStyle(.white)
-                    .padding(.bottom, 160)
+                    
+                    Button {
+                        Task {
+                            await hitLikeQuote()
+                        }
+                    } label: {
+                        ThreeImgBtnLbl(imgName: isLiked ? "heart.fill" : "heart")
+                            .foregroundStyle(configLikeBtn())
+                    }
                 }
-
+                .foregroundStyle(.white)
+                .padding(.bottom, 160)
             }
+        }
+    }
+    
+//MARK: - Function
+    
+    private func configLikeBtn() -> Color {
+        if isLiked {
+            return .red
+        } else {
+            return isDarkText ?? false ? .black : .white
+        }
+    }
+    
+    private func hitLikeQuote() async {
+        let uid = userID ?? ""
+        
+        if isLiked {
+            await ServiceUpload.shared.unLikeQuote(userID: uid, quote: quote, likeQuote: nil)
+            isLiked = false
+        } else {
+            isLiked = true
+            await ServiceUpload.shared.uploadLikeQuote(userID: uid, quote: quote)
+        }
+    }
+    
+    private func quoteToShare() -> Image {
+        let shareV = shareQuoteImg(quote: quote, isDarkText: isDarkText ?? false)
+        let renderer = ImageRenderer(content: shareV)
+        
+        if let uiImage = renderer.uiImage {
+            return Image(uiImage: uiImage)
+        } else {
+            return Image("wall1")
         }
     }
     
 }
 
 #Preview {
-    FeedCellScr(quote: Quote.quoteFirst, isMainScreen: true, showInfo: .constant(false), showCateOnTop: .constant(true))
+    FeedCellScr(quote: Quote.quoteFirst, showInfo: .constant(false), showCateOnTop: .constant(true))
 }
 
 //MARK: -----------------------------------------------
@@ -101,6 +140,7 @@ struct ThreeImgBtnLbl: View {
 
 struct CateTopView: View {
     
+    @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
     var cate: String
     
     var body: some View {
@@ -109,12 +149,51 @@ struct CateTopView: View {
                 Text(cate)
                     .font(.system(size: 12))
                     .fontWeight(.regular)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(isDarkText ?? false ? .black : .white)
                     .padding()
                     .padding(.top, 44)
                 Spacer()
             }
             Spacer()
+        }
+    }
+}
+
+struct shareQuoteImg: View {
+    
+    var quote: Quote
+    var isDarkText: Bool
+    
+    var body: some View {
+        VStack {
+            Spacer()
+            
+            VStack(alignment: .center) {
+                Text(quote.script)
+                    .font(.system(size: 32))
+                    .fontWeight(.regular)
+                    .foregroundStyle(isDarkText ? .black : .white)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+                
+                Text(quote.author.isEmpty ? "" : "-\(quote.author)")
+                    .font(.system(size: 20))
+                    .fontWeight(.regular)
+                    .foregroundStyle(isDarkText ? .black : .white)
+                    .padding(.top, 4)
+                    .padding(.horizontal)
+            }
+            .offset(x: 0, y: -16)
+            
+            Spacer()
+        }
+        .frame(width: UIScreen.width, height: UIScreen.height)
+        .background {
+            Image("wall1")
+                .resizable()
+                .scaledToFill()
+                .frame(width: UIScreen.width, height: UIScreen.height)
+                .ignoresSafeArea()
         }
     }
 }

@@ -15,6 +15,7 @@ enum Cate7_Calm: CaseIterable {
     case stress
     case smile
     case creative
+    case harsh
     
     var name: String {
         switch self {
@@ -32,6 +33,8 @@ enum Cate7_Calm: CaseIterable {
             return "Smile"
         case .creative:
             return "Creativity"
+        case .harsh:
+            return "Harsh truths"
         }
     }
     

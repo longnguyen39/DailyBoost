@@ -72,7 +72,6 @@ struct CateHScrollV: View {
         }
         .padding(.bottom)
     }
-    
 }
 
 #Preview {

@@ -22,7 +22,7 @@ struct CateCellForYou: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .frame(width: frameDim, height: frameDim)
+                .frame(width: frameDim + 24, height: frameDim)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .foregroundStyle(Color(.systemGray6))
             
@@ -38,13 +38,15 @@ struct CateCellForYou: View {
             VStack {
                 HStack {
                     Spacer()
-                    Image(systemName: "xmark.circle.fill")
-                        .imageScale(.medium)
-                        .foregroundStyle(.black)
-                        .padding(.trailing, -4)
-                        .onTapGesture {
-                            removeCate()
-                        }
+                    if chosenCatePathArr.count > 1 {
+                        Image(systemName: "xmark.circle.fill")
+                            .imageScale(.medium)
+                            .foregroundStyle(.black)
+                            .padding(.trailing, -4)
+                            .onTapGesture {
+                                removeCate()
+                            }
+                    }
                 }
                 Spacer()
                 Text(cateP.getCate())
@@ -52,7 +54,7 @@ struct CateCellForYou: View {
                     .fontWeight(.regular)
                     .foregroundStyle(.black)
                     .padding(.all, 8)
-                    .frame(width: 96)
+                    .frame(width: frameDim + 16)
                     .lineLimit(1)
             }
             

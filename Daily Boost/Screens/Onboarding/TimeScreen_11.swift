@@ -7,12 +7,12 @@
 
 import SwiftUI
 
+
 struct TimeScreen: View {
     
     @Binding var user: User
     @Binding var pickedCateArr: [String]
-    
-    var widthFrame: CGFloat = 80
+    var timeWidthFrame: CGFloat = 80
     
     var body: some View {
         VStack {
@@ -26,10 +26,10 @@ struct TimeScreen: View {
                 .padding(.horizontal)
                 .padding(.top, -40)
             
-            HowMany(widthFrame: widthFrame, howMany: $user.howMany).padding()
+            HowMany(widthFrame: timeWidthFrame, howMany: $user.howMany).padding()
             
-            TimeView(widthFrame: widthFrame, context: "Start at", time: $user.start).padding(.top, 12)
-            TimeView(widthFrame: widthFrame, context: "End at", time: $user.end).padding(.top, -4)
+            TimeView(widthFrame: timeWidthFrame, context: "Start at", time: $user.start).padding(.top, 12)
+            TimeView(widthFrame: timeWidthFrame, context: "End at", time: $user.end).padding(.top, -4)
             
             Spacer()
             
@@ -74,7 +74,7 @@ struct HowMany: View {
                     .foregroundStyle(.blue)
             }
             
-            Text("\(howMany)")
+            Text("\(howMany)x")
                 .font(.system(size: 18))
                 .fontWeight(.regular)
                 .foregroundStyle(.black)

@@ -25,7 +25,8 @@ struct PaywallScreen: View {
                 
                 Button {
                     Task {
-                        try await createUser()
+//                        try await createUser()
+                        print("DEBUG: user \(user)")
                     }
                     
                 } label: {
@@ -37,7 +38,8 @@ struct PaywallScreen: View {
                 LoadingView()
             }
         }
-        .toolbar(.hidden, for: .navigationBar)
+//        .toolbar(.hidden, for: .navigationBar)
+        .navigationTitle("Paywall")
         .alert("Oops", isPresented: $showError) {
             Button("Try Again", role: .cancel, action: {})
         } message: {
@@ -47,10 +49,14 @@ struct PaywallScreen: View {
     
 //MARK: - Function
     
+    private func btnIsValid() -> Bool {
+        return !user.email.isEmpty
+    }
+    
     private func createUser() async throws {
         loading = true
         var hasError = false
-        try await AuthService.shared.createUser(passedUser: user, cateArr: pickedCateArr) { hasErr, err in
+        await AuthService.shared.createUser(user: user, cateArr: pickedCateArr) { hasErr, err in
             if hasErr {
                 print("DEBUG_12: err creating user \(err)")
                 showError = hasErr
@@ -63,6 +69,8 @@ struct PaywallScreen: View {
         
         if !hasError {
             UserDefaults.standard.set(false, forKey: UserDe.first_time)
+            UserDefaults.standard.set(FictionOption.both.name, forKey: UserDe.fictionOption)
+            
             firstTime.isFirstTime.toggle()
             print("DEBUG_12: user is \(user)")
         }

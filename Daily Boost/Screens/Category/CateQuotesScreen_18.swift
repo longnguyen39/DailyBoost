@@ -9,70 +9,109 @@ import SwiftUI
 
 struct CateQuotesScreen: View {
     @AppStorage(CATEPATH_CATEQUOTES) var catePath: String?
+//    @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
     
-    @Binding var showCateQuotes: Bool
+    @Binding var showCateQuotesScr: Bool
     @Binding var chosenCatePathArr: [String]
     @Binding var removeCateForYou: String
     @Binding var addCateForYou: String
     
     @State var quoteArr: [Quote] = []
     @State var duplArr: [Int] = []
+    @State var themeUIImage: UIImage = UIImage(named: "loading")!
         
     var body: some View {
-        NavigationView {
-            ZStack {
-                if #available(iOS 17.0, *) {
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            ForEach(quoteArr, id: \.self) { quote in
-                                FeedCellScr(quote: quote, isMainScreen: false, showInfo: .constant(false), showCateOnTop: .constant(false))
-                                    .frame(width: UIScreen.width, height: UIScreen.height)
-                                    .onAppear {
-                                        Task {
-                                            try await cellAppear(quote: quote)
-                                        }
-                                    } //cell appear after each swipe
-                            }
-                        }
-                        .scrollTargetLayout()
-                    }
-                    .scrollTargetBehavior(.paging)
-                    .scrollIndicators(.hidden)
-                    .onAppear {
-                        Task {
-                            await fetchQuotes()
+        ZStack {
+            if #available(iOS 17.0, *) {
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(quoteArr, id: \.self) { quote in
+                            FeedCellScr(quote: quote, showInfo: .constant(false), showCateOnTop: .constant(false))
+                                .frame(width: UIScreen.width, height: UIScreen.height)
+                                .onAppear {
+                                    Task {
+                                        try await cellAppear(quote: quote)
+                                    }
+                                } //cell appear after each swipe
                         }
                     }
-                    .ignoresSafeArea()
-                } else {
-                    Text("DEBUG_18: Damn! update to iOS 17+!")
+                    .scrollTargetLayout()
                 }
+                .scrollTargetBehavior(.paging)
+                .scrollIndicators(.hidden)
+                .onAppear {
+                    Task {
+                        await fetchQuotes()
+                    }
+                }
+                .ignoresSafeArea()
+            } else {
+                Text("DEBUG_18: Damn! update to iOS 17+!")
             }
-            .navigationTitle(catePath?.getCate() ?? "Error")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+            
+            VStack {
+                
+                HStack {
+                    Text(catePath?.getCate() ?? "Error")
+                        .font(.footnote)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.black)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal)
+                        .background(.gray)
+                        .clipShape(.capsule)
+                    
+                    Spacer()
+                    
                     Button {
-                        showCateQuotes.toggle()
+                        showCateQuotesScr.toggle()
                     } label: {
-                        Image(systemName: "chevron.down")
+                        Image(systemName: "xmark.circle.fill")
                             .imageScale(.large)
-                            .fontWeight(.semibold)
-                    }
-                    
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        followFunc()
-                    } label: {
-                        Text(isFollowing() ? "Following" : "Follow")
-                            .font(.subheadline)
                             .fontWeight(.medium)
-                            .foregroundStyle(isFollowing() ? .indigo : .blue)
+                            .foregroundStyle(.gray)
+                            .background(.black)
+                            .clipShape(.circle)
                     }
-                    
+                }
+                .padding(.horizontal)
+                
+                Spacer()
+                
+                Button {
+                    followFunc()
+                } label: {
+                    HStack {
+                        Text(isFollowing() ? "Following" : " Follow ")
+                            .font(.headline)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.black)
+                        
+                        if isFollowing() {
+                            Image(systemName: "checkmark.circle.fill")
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(.yellow)
+                                .background(.black)
+                                .clipShape(.circle)
+                        }
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 12)
+                    .background(isFollowing() ? .gray : .yellow)
+                    .clipShape(.capsule)
+                    .padding(.bottom)
                 }
             }
+        }
+        .background { //this is the best background setup
+            Image(uiImage: themeUIImage)
+                .resizable()
+                .scaledToFill()
+                .frame(width: UIScreen.width, height: UIScreen.height)
+                .ignoresSafeArea()
+        }
+        .onAppear {
+            themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
         }
         
     }
@@ -107,7 +146,7 @@ struct CateQuotesScreen: View {
     private func continueFetch() async throws {
         //handle int arr
         guard let cateP = catePath else { return }
-        var randArr = try await randIntArr(title: cateP.getTitle(), cate: cateP.getCate())
+        var randArr = try await ServiceFetch.shared.randIntArr(title: cateP.getTitle(), cate: cateP.getCate(), both: true)
         randArr = randArr.filter { !duplArr.contains($0) }
         if randArr.isEmpty {
             print("DEBUG_18: no more quotes on \(cateP)")
@@ -151,5 +190,5 @@ struct CateQuotesScreen: View {
 }
 
 #Preview {
-    CateQuotesScreen(showCateQuotes: .constant(false), chosenCatePathArr: .constant(["haha"]), removeCateForYou: .constant("haha"), addCateForYou: .constant("hha"))
+    CateQuotesScreen(showCateQuotesScr: .constant(false), chosenCatePathArr: .constant(["haha"]), removeCateForYou: .constant("haha"), addCateForYou: .constant("hha"))
 }

@@ -13,7 +13,7 @@ struct PurposeScreen: View {
                             GridItem(.flexible()),
                             GridItem(.flexible())] // 3 rows, space btw rows
     let purposeArr: [String] = Quote.purposeStrArr
-    @State var user: User = User.emptyState
+    @State var user: User = User.initState
     @State var pickedCateArr: [String] = []
     
     var body: some View {
@@ -57,6 +57,22 @@ struct PurposeScreen: View {
                         .opacity(canContinue() ? 1.0 : 0.4)
                 }
                 .disabled(!canContinue())
+                
+                NavigationLink {
+                    LoginScreen()
+                } label: {
+                    HStack(spacing: 3) {
+                        Text("Already have an account?  - ")
+                            .fontWeight(.regular)
+                            .foregroundStyle(.black)
+                        Text(" Login")
+                            .fontWeight(.bold)
+                            .foregroundStyle(.blue)
+                    }
+                    .font(.subheadline)
+                }
+                .padding(.bottom)
+                .padding(.top, 8)
             }
             .toolbar(.hidden, for: .navigationBar)
             

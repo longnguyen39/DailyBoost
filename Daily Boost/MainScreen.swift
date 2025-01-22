@@ -25,7 +25,6 @@ struct MainScreen: View {
             } else {
                 HomeScreen()
             }
-//            UploadScreen()
         }
         .environmentObject(firstTime)
         .onAppear {

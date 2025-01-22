@@ -7,24 +7,48 @@
 
 import SwiftUI
 
+public var isUploadingFiction = false
+
 struct UploadScreen: View {
+    
+    @State var showReport: Bool = false
         
     var body: some View {
-        VStack {
-            ScrollView {
-                ForEach(Quotes.quoteUploadArr, id: \.self) { quoteStr in
-                    QuoteUploadView(quoteStr: quoteStr)
+        NavigationView {
+            VStack {
+                ScrollView {
+                    NavigationLink {
+                        QuoteReportScreen(isFiction: true)
+                    } label: {
+                        ContBtnView(context: "Fictional Quote")
+                    }
+                    
+                    NavigationLink {
+                        QuoteReportScreen(isFiction: false)
+                    } label: {
+                        ContBtnView(context: "Non-fictional Quote")
+                    }
+                    
+                    NavigationLink {
+                        ThemeUploadScreen()
+                    } label: {
+                        ContBtnView(context: "Theme upload")
+                    }
+                    
+                    Divider().padding()
+                    
+                    ForEach(Quotes.quoteUploadArr, id: \.self) { quoteStr in
+                        QuoteUploadView(quoteStr: quoteStr)
+                    }
                 }
             }
+            .navigationTitle("Upload Quotes")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                Quotes.getFictionOrNot()
+                print("DEBUG_16: there are \(isUploadingFiction ? "fictional" :  "Non-fictional") \(Quotes.quoteUploadArr.count) quotes to upload")
+            }
         }
-        .onAppear {
-            print("DEBUG_16: quoteUploadArr is \(Quotes.quoteUploadArr.count)")
-            //check sources
-        }
-    }
-    
-    private func checkSources() {
-        
     }
     
 }
@@ -48,7 +72,7 @@ struct QuoteUploadView: View {
         HStack {
             Text("*  ")
             
-            VStack {
+            VStack(alignment: .leading) {
                 Text("\(quoteStr.getQScript())")
                     .multilineTextAlignment(.leading)
                 HStack {
@@ -94,10 +118,11 @@ struct QuoteUploadView: View {
     }
     
     private func configureAndUploadQuote() async throws {
-        initCount = await ServiceFetch.shared.fetchQuoteCount(title: quoteStr.getQTitle(), cate: quoteStr.getQCate())
+        initCount = await ServiceFetch.shared.fetchQuoteCount(title: quoteStr.getQTitle(), cate: quoteStr.getQCate(), isFiction: isUploadingFiction)
+        initCount += isUploadingFiction ? 1000000 : 0
         
         //check duplicates
-        let dupl = try await ServiceFetch.shared.checkDuplicatedQuote(title: quoteStr.getQTitle(), cate: quoteStr.getQCate(), script: quoteStr.getQScript())
+        let dupl = await ServiceFetch.shared.checkDuplicatedQuote(title: quoteStr.getQTitle(), cate: quoteStr.getQCate(), script: quoteStr.getQScript())
         if dupl {
             print("DEBUG_16: found duplicates *** \(quoteStr)")
             findDup = true
@@ -106,11 +131,12 @@ struct QuoteUploadView: View {
         
         //configure quote and upload
         initCount += 1
-        let quote = Quote(orderNo: initCount, script: quoteStr.getQScript(), title: quoteStr.getQTitle(), category: quoteStr.getQCate(), isFictional: false, author: quoteStr.getQAuth())
-        try await HelperUploadQuotes.share.uploadCateTitle(quote: quote)
-        try await HelperUploadQuotes.share.uploadOneQuote(quote: quote)
+        let quote = Quote(orderNo: initCount, script: quoteStr.getQScript(), title: quoteStr.getQTitle(), category: quoteStr.getQCate(), isFictional: isUploadingFiction, author: quoteStr.getQAuth())
+        try await HelperUpload.shared.uploadCateTitle(quote: quote)
+        try await HelperUpload.shared.uploadOneQuote(quote: quote)
         print("DEBUG_16: done uploading \(quote.orderNo)th quote for (\(quote.category))")
         didUpload = true
     }
     
 }
+

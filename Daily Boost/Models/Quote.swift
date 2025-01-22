@@ -49,7 +49,9 @@ struct Quote: Codable, Hashable { //Hashable when used in ForEach
         "\(CateTitle.six.title)/\(Cate6_Sport.recovery.name)",
         
         "\(CateTitle.seven.title)/\(Cate7_Calm.calm.name)",
-        "\(CateTitle.seven.title)/\(Cate7_Calm.perseverance.name)"
+        "\(CateTitle.seven.title)/\(Cate7_Calm.perseverance.name)",
+        "\(CateTitle.seven.title)/\(Cate7_Calm.harsh.name)"
+        
     ]
 }
 

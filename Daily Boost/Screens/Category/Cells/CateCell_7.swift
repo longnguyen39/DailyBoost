@@ -23,7 +23,7 @@ struct CateCell: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .frame(width: frameDim, height: frameDim)
+                .frame(width: frameDim + 24, height: frameDim)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .foregroundStyle(Color(.systemGray6))
                 .overlay {
@@ -44,18 +44,24 @@ struct CateCell: View {
             VStack {
                 HStack {
                     Spacer()
-                    Image(systemName: "checkmark.circle.fill")
-                        .imageScale(.medium)
-                        .foregroundStyle(mainColor)
-                        .padding(.all, 4)
+                    Image(systemName: "checkmark")
+                        .resizable()
+                        .frame(width: 8, height: 8)
+                        .fontWeight(.bold)
+                        .foregroundStyle(isPicked() ? .black : .clear)
+                        .padding(.all, 6)
+                        .background(mainColor)
+                        .clipShape(.circle)
+                        .padding(.all, 6)
                 }
                 Spacer()
-                Text(cateP.getCate())
+                Text(cateP.getCate()) //caption
                     .font(.caption)
                     .fontWeight(.regular)
                     .foregroundStyle(.black)
+                    .minimumScaleFactor(0.8)
                     .padding(.all, 8)
-                    .frame(width: 96)
+                    .frame(width: frameDim + 16)
                     .lineLimit(1)
             }
             
@@ -64,7 +70,7 @@ struct CateCell: View {
             mainColor = returnBackgroundC()
         }
         .onTapGesture {
-            pickCate(catePath: cateP)
+            pickCate()
             mainColor = returnBackgroundC()
         }
         .onChange(of: removeCateForYou) { _ in
@@ -89,18 +95,27 @@ struct CateCell: View {
         return isPicked() ? .yellow : .clear
     }
     
-    private func pickCate(catePath: String) {
+    private func pickCate() {
         var didRemove = false
-        for cateP in chosenCatePathArr {
-            if cateP.getCate() == catePath.getCate() {
-                chosenCatePathArr = chosenCatePathArr.filter() { $0.getCate() != catePath.getCate()
-                } //remove picked cateP
-                didRemove = true
-                break
+        if chosenCatePathArr.count > 1 {
+            //de-select picked cateP
+            for catePh in chosenCatePathArr {
+                if catePh.getCate() == cateP.getCate() {
+                    chosenCatePathArr = chosenCatePathArr.filter() { $0.getCate() != cateP.getCate()
+                    }
+                    didRemove = true
+                    break
+                }
             }
         }
         if !didRemove {
-            chosenCatePathArr.append(catePath)
+            //cannot add the same cateP to arr
+            let noAppend = chosenCatePathArr.count == 1 &&  chosenCatePathArr[0] == cateP
+            if noAppend {
+                print("DEBUG_7: no append")
+            } else {
+                chosenCatePathArr.insert(cateP, at: 0) //append to front of arr
+            }
         }
     }
     

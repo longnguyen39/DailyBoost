@@ -14,19 +14,23 @@ struct HomeScreen: View {
     @AppStorage(UserDe.show_top_left) var show_top_left: Bool?
     @StateObject var vm = HomeScreenVM()
     
+    @State var themeUIImage: UIImage = UIImage(named: "wall1")!
+    
     var body: some View {
-        ZStack {
-            Image("wall1")
-                .resizable()
-                .scaledToFill()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea()
+        ZStack { //set background for this ZS, best setup
+            
+            //if we do below, the size of som img would mess up the UI of the entire screen
+//            Image("wall1")
+//                .resizable()
+//                .scaledToFill()
+//                .frame(minWidth: 0)
+//                .ignoresSafeArea()
             
             if #available(iOS 17.0, *) {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(vm.quoteArr, id: \.self) { quote in
-                            FeedCellScr(quote: quote, isMainScreen: true, showInfo: $vm.showInfo, showCateOnTop: $vm.showCateTopLeft)
+                            FeedCellScr(quote: quote, showInfo: $vm.showInfo, showCateOnTop: $vm.showCateTopLeft)
                                 .frame(width: UIScreen.width, height: UIScreen.height)
                                 .onAppear {
                                     Task {
@@ -42,6 +46,7 @@ struct HomeScreen: View {
                 .onAppear {
                     Task {
                         vm.showCateTopLeft = show_top_left ?? true
+                        await vm.fetchUser()
                         await vm.screenAppear()
                     }
                 }
@@ -50,9 +55,12 @@ struct HomeScreen: View {
                         await vm.refetchTriggered()
                     }
                 }
+                .onChange(of: vm.showTheme) { _ in
+                    UserDefaults.standard.set(true, forKey: UserDe.themeNotFetch)
+                }
                 
             } else {
-                Text("DEBUG_HomeScreen: Damn son! update to iOS 17!")
+                Text("DEBUG_HomeScreen: Damn son! update to iOS 17+!")
             }
             
             VStack {
@@ -81,7 +89,6 @@ struct HomeScreen: View {
                     }
                 }
                 .foregroundStyle(.white)
-                .padding()
             }
             .padding()
             
@@ -89,13 +96,26 @@ struct HomeScreen: View {
                 LoadingView()
             }
         }
+        .background { //this is the best background setup
+            Image(uiImage: themeUIImage)
+                .resizable()
+                .scaledToFill()
+                .frame(width: UIScreen.width, height: UIScreen.height)
+                .ignoresSafeArea()
+        }
+        .onAppear {
+            themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
+        }
+        .onChange(of: vm.showTheme) { _ in
+            themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
+        }
         .fullScreenCover(isPresented: $vm.showCate) {
-            CategoryScreen(showCate: $vm.showCate, chosenCatePathArr: $vm.chosenCatePathArr, refetch: $vm.refetch, showCateTopLeft: $vm.showCateTopLeft)
+            CategoryScreen(showCate: $vm.showCate, chosenCatePathArr: $vm.chosenCatePathArr, refetch: $vm.refetch)
         }
-        .fullScreenCover(isPresented: $vm.showSetting) {
-            SettingScreen(showSetting: $vm.showSetting)
+        .sheet(isPresented: $vm.showSetting) {
+            SettingScreen(user: $vm.user, showSetting: $vm.showSetting, showCateTopLeft: $vm.showCateTopLeft)
         }
-        .fullScreenCover(isPresented: $vm.showTheme) {
+        .sheet(isPresented: $vm.showTheme) {
             ThemeScreen(showTheme: $vm.showTheme)
         }
         .sheet(isPresented: $vm.showInfo) {
@@ -125,7 +145,7 @@ struct CategoryBtnLbl: View {
         }
         .padding(.all, 12)
         .fontWeight(.light)
-        .background(.gray.opacity(0.5))
+        .background(.gray.opacity(0.72))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
@@ -139,7 +159,7 @@ struct StandardBtnLbl: View {
             .resizable()
             .frame(width: 24, height: 24)
             .padding(.all, 12)
-            .background(.gray.opacity(0.5))
+            .background(.gray.opacity(0.72))
             .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
