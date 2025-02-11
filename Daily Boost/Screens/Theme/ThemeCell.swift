@@ -11,7 +11,9 @@ let themeCellW: CGFloat = (UIScreen.width - 64) / 3
 let themeCellH: CGFloat = themeCellW * 1.8
 
 struct ThemeCell: View {
-        
+    
+    @Environment(\.colorScheme) var mode
+    
     @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
     @AppStorage(UserDe.themeFileName) var fileName: String?
     
@@ -31,14 +33,14 @@ struct ThemeCell: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(lineWidth: 2)
-                        .foregroundStyle(isPicked ? .black : .clear)
+                        .foregroundStyle(configBorderC())
                 }
                 .onTapGesture {
                     chooseThemeImg()
                 }
             
             Text("abcd")
-                .font(.system(size: 24))
+                .font(.headline)
                 .fontWeight(.medium)
                 .foregroundStyle(configTextColor())
                 .onTapGesture {
@@ -49,17 +51,18 @@ struct ThemeCell: View {
                 HStack {
                     Spacer()
                     Image(systemName: "checkmark.circle.fill")
-                        .imageScale(.large)
-                        .foregroundStyle(isPicked ? .yellow : .clear)
-                        .background(isPicked ? .black : .clear)
+                        .imageScale(.medium)
+                        .foregroundStyle(isPicked ? .color3 : .clear)
+                        .background(isPicked ? .white : .clear)
                         .clipShape(.circle)
                         .padding(.all, 8)
                 }
                 Spacer()
             }
         }
+        .sensoryFeedback(.success, trigger: theme)
         .onAppear {
-            if isPicked {
+            if isPicked { //for fist cell appear on top
                 themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
             } else {
                 fetchThemeImg()
@@ -68,6 +71,14 @@ struct ThemeCell: View {
     }
     
 //MARK: - Function
+    
+    private func configBorderC() -> Color {
+        if mode == .light {
+            return isPicked ? .black : .clear
+        } else {
+            return isPicked ? .white : .clear
+        }
+    }
     
     func configTextColor() -> Color {
         if isPicked {
@@ -78,25 +89,24 @@ struct ThemeCell: View {
     }
     
     func fetchThemeImg() {
-        if theme.fileName == fileName {
+        let file = fileName ?? ""
+        if file.isEmpty && theme.fileName == "default" {
             isPicked = true
-            if theme.fileName == "default" {
-                themeUIImage = UIImage(named: "wall1")!
-            } else {
-                themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
-            }
+            themeUIImage = UIImage(named: "wall1")!
+        } else if theme.fileName == fileName {
+            isPicked = true
+            themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
         } else {
-            if theme.fileName == "default" {
-                themeUIImage = UIImage(named: "wall1")!
-            } else {
-                ThemeManager.shared.fetchAThemeImage(themeTitle: theme.title, fileName: theme.fileName) { uiImage in
-                    if let uiImg = uiImage {
-                        themeUIImage = uiImg
-                    }
+            ThemeManager.shared.fetchAThemeImage(themeTitle: theme.title, fileName: theme.fileName) { uiImage in
+                if let uiImg = uiImage {
+                    themeUIImage = uiImg
+                } else {
+                    themeUIImage = UIImage(named: "wall1")!
                 }
             }
         }
     }
+    
     
     func chooseThemeImg() {
         if !isPicked {

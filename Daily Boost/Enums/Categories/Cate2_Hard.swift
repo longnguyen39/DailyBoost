@@ -8,20 +8,18 @@
 import Foundation
 
 enum Cate2_Hard: CaseIterable {
-    case overthinking
-    case uncertainty
-    case frustration
-    case missSomeone
+    case loneliness
     case heartBroken
     case overFear
+    case frustration
     case beStrong
+    case overthinking
+    case uncertainty
+    case missSomeone
     case change
-    case loneliness
     
     var name: String {
         switch self {
-        case .overthinking:
-            return "Overthinking"
         case .uncertainty:
             return "Uncertainty"
         case .frustration:
@@ -30,6 +28,8 @@ enum Cate2_Hard: CaseIterable {
             return "Nostalgia"
         case .heartBroken:
             return "Heartbroken"
+        case .overthinking:
+            return "Overthinking"
         case .overFear:
             return "Fear"
         case .beStrong:

@@ -9,10 +9,10 @@ import SwiftUI
 
 struct CateCellForYou: View {
     
-    let imgDim: CGFloat = 40
-    let frameDim: CGFloat = 96
+    @Environment(\.colorScheme) var mode
+    let imgDim: CGFloat = 32
+    let frameDim: CGFloat = 88
     
-    @Binding var removeCateForYou: String
     @Binding var chosenCatePathArr: [String]
     var cateP: String
     @Binding var showCateQuotes: Bool
@@ -22,9 +22,9 @@ struct CateCellForYou: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .frame(width: frameDim + 24, height: frameDim)
+                .frame(width: frameDim + 32, height: frameDim)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                .foregroundStyle(Color(.systemGray6))
+                .foregroundStyle(mode == .light ? LIGHT_GRAY : DARK_GRAY)
             
             VStack {
                 Image(cateP.getCate())
@@ -41,10 +41,12 @@ struct CateCellForYou: View {
                     if chosenCatePathArr.count > 1 {
                         Image(systemName: "xmark.circle.fill")
                             .imageScale(.medium)
-                            .foregroundStyle(.black)
+                            .foregroundStyle(mode == .light ?  .black : .white)
                             .padding(.trailing, -4)
                             .onTapGesture {
-                                removeCate()
+                                withAnimation {
+                                    removeCate()
+                                }
                             }
                     }
                 }
@@ -52,8 +54,9 @@ struct CateCellForYou: View {
                 Text(cateP.getCate())
                     .font(.caption)
                     .fontWeight(.regular)
-                    .foregroundStyle(.black)
+                    .minimumScaleFactor(0.8)
                     .padding(.all, 8)
+                    .padding(.bottom, 4)
                     .frame(width: frameDim + 16)
                     .lineLimit(1)
             }
@@ -72,11 +75,10 @@ struct CateCellForYou: View {
     
     private func removeCate() {
         chosenCatePathArr = chosenCatePathArr.filter { $0 != cateP }
-        removeCateForYou = cateP
     }
     
 }
 
 #Preview {
-    CateCellForYou(removeCateForYou: .constant("haha"), chosenCatePathArr: .constant(Quote.purposeStrArr), cateP: "", showCateQuotes: .constant(false))
+    CateCellForYou(chosenCatePathArr: .constant(Quote.purposeStrArr), cateP: "", showCateQuotes: .constant(false))
 }

@@ -7,7 +7,7 @@
 
 /*
  
- -Current highest count: ProfileScreen_27
+ -Current highest count: CateAdjustScreen_28
  -When upload Theme Img, be slow and careful
  
  //-------------------------------------------------
@@ -39,6 +39,7 @@
  //-------------------------------------------------
 
  
+ -Some code (critical) are only available in iOS 17+
  -All icons for category is found in website icon8
  -Using EnvironmentObject to transit the Onboarding process to the Home screen, below is the site of environmentObject:
  https://www.hackingwithswift.com/quick-start/swiftui/how-to-use-environmentobject-to-share-data-between-views
@@ -62,5 +63,9 @@
  -For Quote orderNo, we separate by letting the non-fiction quotes regular Int order, while the fiction quotes is plus  1,000,000 with the hope that not any cate would exceed 1 mil. We do this to fetch only either Fiction/nonF quote
  
  -We wont let user de-select all cate. There must always be 1 cate to show the quotes.
+ 
+ -We use Local notifications to send users quotes. Here is the link to learn more in the future: https://www.youtube.com/watch?v=6Y9KDTjmpLA
+ 
+ -
  
  */

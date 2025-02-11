@@ -9,6 +9,8 @@ import Foundation
 import Firebase
 import SwiftUI
 
+var pagiSnapshot: QueryDocumentSnapshot?
+
 class ServiceFetch {
     
     static let shared = ServiceFetch()
@@ -17,22 +19,25 @@ class ServiceFetch {
     
 //MARK: - Functions Quote
     
-    func fetchQuotesFromACate(title: String, cate: String) async -> [Quote] {
-        do {
-            let randArr = try await randIntArr(title: title, cate: cate, both: false) //arr of int
-            print("DEBUG_14: randIntArr \(title)/\(cate) is \(randArr)")
-            return try await fetchQuotes(title: title, cate: cate, randArr: randArr)
-        } catch {
-            let err = error.localizedDescription
-            print("DEBUG_14: err fetching quotes: \(err)")
-            return []
-        }
+    func fetchARandQuote(title: String, cate: String) async -> Quote {
+        let randInt = await generateRandInt(title: title, cate: cate, showOneCate: false, count_nf: -1, count_f: -1)
+        print("DEBUG_14: randInt \(title)/\(cate) is \(randInt)")
+        return await fetchAQuote(title: title, cate: cate, orderNo: randInt)
     }
     
-    func fetchQuotes(title: String, cate: String, randArr: [Int]) async throws -> [Quote] {
+    //supposed to return arr of ONLY 1 element
+    func fetchAQuote(title: String, cate: String, orderNo: Int) async -> Quote {
         let ref = Firestore.firestore().collection(title).document(cate).collection(DB_CATETITLE_COLL)
-        let snapshot = try await ref.whereField("orderNo", in: randArr).getDocuments()
-        return snapshot.documents.compactMap({ try? $0.data(as: Quote.self) }) //loop snapshot, map (sort) all info and cast them as type Quote, return [Quote]
+        
+        do {
+            let snapshot = try await ref.whereField("orderNo", isEqualTo: orderNo).getDocuments()
+            let arr = snapshot.documents.compactMap({ try? $0.data(as: Quote.self) }) //loop snapshot, map (sort) all info and cast them as type Quote, return [Quote]
+            return arr.first ?? Quote.mockQuote
+        } catch {
+            print("DEBUG_14: err fetch a quote")
+            return Quote.mockQuote
+        }
+        
     }
     
     func fetchQuoteCount(title: String, cate: String, isFiction: Bool) async -> Int {
@@ -47,75 +52,47 @@ class ServiceFetch {
         }
     }
     
-    func randIntArr(title: String, cate: String, both: Bool) async throws -> [Int] { //screen 18 uses this
+    func generateRandInt(title: String, cate: String , showOneCate: Bool, count_nf: Int, count_f: Int) async -> Int { //screen 18 uses this
         
-        //non-fiction
-        let countQueryNF = Firestore.firestore().collection(title).document(cate).collection(DB_CATETITLE_COLL).whereField("isFictional", isEqualTo: false).count
-        let snapshotNF = try await countQueryNF.getAggregation(source: .server)
-        let countNonF = Int(truncating: snapshotNF.count)
+        var countNF = 0
+        var countF = 0
         
-        //fiction
-        let countQueryF = Firestore.firestore().collection(title).document(cate).collection(DB_CATETITLE_COLL).whereField("isFictional", isEqualTo: true).count
-        let snapshotF = try await countQueryF.getAggregation(source: .server)
-        let countF = Int(truncating: snapshotF.count)
-                
-        if both { //for screen 18
-            let bothArr = randIntNonF(countNF: countNonF) + randIntF(countF: countF)
-            return bothArr.shuffled()
+        if showOneCate {
+            countNF = count_nf
+            countF = count_f
+        } else {
+            countNF = await fetchQuoteCount(title: title, cate: cate, isFiction: false)
+            countF = await fetchQuoteCount(title: title, cate: cate, isFiction: true)
+        }
+        
+        //arr has 1 F quote and 1 NF quote
+        var bothArr: [Int] = []
+        if countF == 0 {
+            bothArr = [Int.random(in: 1...countNF)]
+        } else {
+            bothArr = [Int.random(in: 1...countNF), Int.random(in: 1000001...countF+1000000)]
+        }
+//        bothArr = [Int.random(in: 1...countNF), Int.random(in: 1000001...countF+1000000)]
+        
+        //return rand int
+        if showOneCate { //for CateQuoteScr_18
+            return bothArr.randomElement()!
             
         } else { //set arr
             let option = fictionOption ?? "none"
             print("DEBUG_14: now fetch \(option)")
             
             if fictionOption == FictionOption.nonFiction.name {
-                return randIntNonF(countNF: countNonF)
+                return Int.random(in: 1...countNF)
             } else if fictionOption == FictionOption.fiction.name {
-                return randIntF(countF: countF)
+                if countF == 0 {
+                    return 0
+                } else {
+                    return Int.random(in: 1000001...countF+1000000)
+                }
             } else { //both
-                let bothArr = randIntNonF(countNF: countNonF) + randIntF(countF: countF)
-                return bothArr.shuffled()
+                return bothArr.randomElement()!
             }
-        }
-    }
-    
-    private func randIntNonF(countNF: Int) -> [Int] {
-        var arr: [Int] = []
-        if countNF >= 1 { //must have >1 quote for that cate
-            for _ in 1...3 { // 3 attempts for each cate
-                let randNF = Int.random(in: 1...countNF)
-                arr.append(randNF)
-            }
-            return arr.removingDuplicates()
-        } else {
-            print("DEBUG_14: countNF is \(countNF)")
-            return [1]
-        }
-    }
-    
-    private func randIntF(countF: Int) -> [Int] {
-        var arr: [Int] = []
-        if countF >= 1 { //must have >1 quote for that cate
-            for _ in 1...3 { // 3 attempts for each cate
-                let randF = Int.random(in: 1000001...countF+1000000)
-                arr.append(randF)
-            }
-            return arr.removingDuplicates()
-        } else {
-            print("DEBUG_14: countF is \(countF)")
-            return [1]
-        }
-    }
-    
-    func checkDuplicatedQuote(title: String, cate: String, script: String) async -> Bool {
-        
-        let snapshot = Firestore.firestore().collection(title).document(cate).collection(DB_CATETITLE_COLL).whereField("script", isEqualTo: script)
-        
-        do {
-            let querySnapshot = try await snapshot.getDocuments()
-            return !querySnapshot.documents.isEmpty //if no dupl found, return false
-        } catch {
-            print("DEBUG_14: error fetching duplicated script \(error.localizedDescription)")
-            return true
         }
     }
     
@@ -133,7 +110,7 @@ class ServiceFetch {
             } else {
                 print("DEBUG_14: doc of user is not exist")
             }
-            return arr
+            return arr.shuffled()
         } catch {
             print("DEBUG_14: error fetching QuotePath \(error.localizedDescription)")
             return []
@@ -167,34 +144,46 @@ class ServiceFetch {
     
 //MARK: - Functions LikeQuote
     
-    func fetchLikeQuotes(userID: String) async throws -> [LikeQuote] {
-        let ref = Firestore.firestore().collection(DB_User.coll).document(userID).collection(DB_User.like_coll)
-        let snapshot = try await ref.order(by: "timeStamp", descending: true).limit(to: 10).getDocuments()
-        let arr = snapshot.documents.compactMap({ try? $0.data(as: LikeQuote.self) }) //loop snapshot, map (sort) all info and cast them as type Quote, return [Quote]
-        
-        //save for pagination
-//        UserDefaults.standard.set(arr[arr.count-1].catePath, forKey: UserDe.last_fetched_likeQPath)
-//        UserDefaults.standard.set(arr[arr.count-1].timeStamp, forKey: UserDe.last_fetched_likeQTime)
-
-        return arr
+    func fetchLikeQCount(userID: String) async -> Int {
+        let ref = Firestore.firestore().collection(DB_User.coll).document(userID).collection(DB_User.like_coll).count
+        do {
+            let snapshot = try await ref.getAggregation(source: .server)
+            return Int(truncating: snapshot.count)
+        } catch {
+            print("DEBUG_14: err likeQ count \(error.localizedDescription)")
+            return 0
+        }
     }
     
-//    func paginateLikeQuotes(userID: String) async throws -> [LikeQuote] {
-//        let lastTime = UserDefaults.standard.object(forKey: UserDe.last_fetched_likeQTime) as? Date ?? Date.now
-//        
-//        let ref = Firestore.firestore().collection(DB_User.coll).document(userID).collection(DB_User.like_coll)
-//        let snapshot = try await ref
-//            .whereField("timeStamp", isLessThan: lastTime)
-//            .order(by: "timeStamp", descending: true)
-//            .limit(to: 5).getDocuments()
-//        let arr = snapshot.documents.compactMap({ try? $0.data(as: LikeQuote.self) }) //loop snapshot, map (sort) all info and cast them as type Quote, return [Quote]
-//        
-//        //save for pagination
-//        UserDefaults.standard.set(arr[arr.count-1].catePath, forKey: UserDe.last_fetched_likeQPath)
-//        UserDefaults.standard.set(arr[arr.count-1].timeStamp, forKey: UserDe.last_fetched_likeQTime)
-//        
-//        return arr
-//    }
+    func fetchLikeQuotes(userID: String) async throws -> [LikeQuote] {
+        let ref = Firestore.firestore().collection(DB_User.coll).document(userID).collection(DB_User.like_coll)
+        let snapshot = try await ref
+            .order(by: "timeStamp", descending: true)
+            .limit(to: 10)
+            .getDocuments()
+        
+        guard let lastSnapshot = snapshot.documents.last else {
+            return []
+        }
+        pagiSnapshot = lastSnapshot
+        
+        return snapshot.documents.compactMap({ try? $0.data(as: LikeQuote.self) }) //loop snapshot, map (sort) all info and cast them as type Quote, return [Quote]
+    }
+    
+    func configPagiLikeQArr(userID: String) async throws -> [LikeQuote] {
+        
+        guard let lastSnapshot = pagiSnapshot else {
+            return []
+        }
+        
+        let ref = Firestore.firestore().collection(DB_User.coll).document(userID).collection(DB_User.like_coll)
+        let snapshot = try await ref
+            .order(by: "timeStamp", descending: true)
+            .limit(to: 10)
+            .start(afterDocument: lastSnapshot)
+            .getDocuments()
+        return snapshot.documents.compactMap({ try? $0.data(as: LikeQuote.self) }) //loop snapshot, map (sort) all info and cast them as type Quote, return [Quote]
+    }
     
     
 //MARK: - Functions Theme fetching

@@ -6,8 +6,12 @@
 //
 
 import Firebase
+import SwiftUI
 
 let DB_SOURCE_URL = "sourceURL"
+let DARK_GRAY = Color.gray.opacity(0.2)
+let LIGHT_GRAY = Color(.systemGray6)
+
 
 struct DB_User {
     static let coll = "users"
@@ -47,10 +51,9 @@ struct UserDe {
     static let fictionOption = "fictionOption"
     
     static let first_time = "userDefault_firstTime" //can be ignored if we authorize only checking userID
-    static let did_welcome = "userDefault_Did_Welcome" //first-time user, or when no cate is chosen
 
-    static let last_fetched_Q = "last_fetched_quote" //main screen, last-fetched quote before fetching new
-    static let quote_last = "USER_D_QUOTE_LAST" //last fetched userD for showing all quotes in a cate
+    static let last_fetched_Q = "last_fetched_quote" //homeScreen
+    static let quote_last = "USER_D_QUOTE_LAST" //CateQuoteScr_18
     
     //LikeQuoteScr, last-fetched quote before fetching new
     static let last_fetched_likeQPath = "last_fetched_likeQPath"
@@ -63,8 +66,9 @@ struct UserDe {
     static let Local_ThemeImg = "Local_ThemeImg"
     static let isDarkText = "isDarkText"
     static let themeFileName = "themeFileName"
-
+    
+    static let loginDetected = "loginDetected"
 }
 
-let DB_QUOTE_HIST = 10 //max hist is 10 quotes
+let DB_QUOTE_HIST = 30 //max hist is 30 quotes
 let resetPassNote = "We just send a Reset-Password link to your email. Please check your inbox."

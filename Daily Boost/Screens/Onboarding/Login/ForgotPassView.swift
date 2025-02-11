@@ -17,10 +17,10 @@ struct ForgotPassView: View {
     var body: some View {
         VStack {
             //logo
-            Image("wall1s")
+            Image("logo")
                 .resizable()
                 .frame(width: 120, height: 120)
-                .clipShape(Circle.circle)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 .padding(.all, 24)
                         
             TextField("Enter your Email", text: $email)
@@ -44,7 +44,6 @@ struct ForgotPassView: View {
             Spacer()
         }
         .navigationTitle("Forgot Password?")
-        .background(.white)
         .alert("Head's up!", isPresented: $showAlert) {
             Button("OK", role: .cancel, action: {
                 if message == resetPassNote {

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct LoginScreen: View {
     
+    @Environment(\.colorScheme) var mode
+    
     @EnvironmentObject var firstTime: FirstTime
     @State var showError: Bool = false
     @State var showLoading: Bool = false
@@ -22,13 +24,10 @@ struct LoginScreen: View {
     var body: some View {
         ZStack { //loadingView
             VStack {
-                Image("wall1s")
+                Image("logo")
                     .resizable()
                     .frame(width: 120, height: 120)
-                    .clipShape(.circle)
-                //                        .overlay(content: {
-                //                            RoundedRectangle(cornerRadius: 20).stroke(.pink, lineWidth: 3)
-                //                        })
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                     .padding(.all, 24)
                 
                 //textField
@@ -60,9 +59,9 @@ struct LoginScreen: View {
                     ForgotPassView()
                 } label: {
                     Text("Forgot password?")
-                        .font(.footnote)
+                        .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.pink)
+                        .foregroundStyle(.red)
                         .padding(.top)
                         .padding(.trailing, 28)
                 }
@@ -92,7 +91,6 @@ struct LoginScreen: View {
             }
         }
         .navigationTitle("Login")
-        .background(.white)
     }
     
     private func logIn() async {
@@ -114,6 +112,9 @@ struct LoginScreen: View {
             //proceed when login succeeds
             UserDefaults.standard.set(false, forKey: UserDe.first_time)
             UserDefaults.standard.set(FictionOption.both.name, forKey: UserDe.fictionOption)
+            
+            UserDefaults.standard.set(true, forKey: UserDe.loginDetected) //set noti when login
+
             
             firstTime.isFirstTime.toggle()
             print("DEBUG_26: just login \(email)")

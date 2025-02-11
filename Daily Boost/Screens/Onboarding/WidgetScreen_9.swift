@@ -9,6 +9,8 @@ import SwiftUI
 
 struct WidgetScreen: View {
     
+    var notiGranted: Bool
+    
     @Binding var user: User
     @Binding var pickedCateArr: [String]
     
@@ -17,47 +19,14 @@ struct WidgetScreen: View {
             ThemeImgView()
             
             Text("Let's add a widget to your screen")
-                .font(.system(size: 24))
+                .font(.system(size: 20))
                 .fontWeight(.medium)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.black)
                 .padding(.horizontal)
                 .padding(.top, -40)
-                .padding(.bottom, 24)
+                .padding(.bottom, 12)
             
-            HStack {
-                Image("wall1")
-                    .resizable()
-                    .frame(width: 72, height: 72)
-                    .scaledToFit()
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                
-                Text("Hold down your finger anywhere on your screen until the apps jiggle.")
-                    .font(.system(size: 16))
-                    .fontWeight(.regular)
-                    .multilineTextAlignment(.leading)
-                    .foregroundStyle(.black)
-                    .padding()
-                
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.bottom, 12)
-            
-            HStack {
-                plusTopBtn()
-                
-                Text("Tap the + button at the top left corner, pick Daily Boost widget and add it to your screen.")
-                    .font(.system(size: 16))
-                    .fontWeight(.regular)
-                    .multilineTextAlignment(.leading)
-                    .foregroundStyle(.black)
-                    .padding()
-                
-                Spacer()
-            }
-            .padding(.horizontal)
-            
+            WidgetStack(spacing: 0)
             
             Spacer()
             
@@ -68,28 +37,106 @@ struct WidgetScreen: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            Task {
+                if notiGranted {
+                    await setNoti()
+                }
+            }
+        }
+    }
+    
+    private func setNoti() async {
+        NotificationManager.shared.clearAllPendingNoti()
+        
+        var block = (user.end + 12 - user.start) * 60 / user.howMany
+        block += (block / user.howMany) //based on testing
+        
+        for notiInt in 0..<user.howMany {
+            if notiInt == user.howMany - 1 {
+                await NotificationManager.shared.scheduleNoti(hour: user.end+12, min: 0, catePArr: pickedCateArr)
+            } else {
+                let t = (user.start * 60) + (notiInt * block)
+                let hour = t / 60
+                let min = t % 60
+                await NotificationManager.shared.scheduleNoti(hour: hour, min: min, catePArr: pickedCateArr)
+            }
+        }
     }
     
 }
 
 #Preview {
-    WidgetScreen(user: .constant(User.initState), pickedCateArr: .constant(Quote.purposeStrArr))
+    WidgetScreen(notiGranted: false, user: .constant(User.initState), pickedCateArr: .constant(Quote.purposeStrArr))
 }
 
 //-------------------------------------------------
 
-struct plusTopBtn: View {
+struct WidgetStack: View {
+    
+    var spacing: CGFloat
+    var lineH: CGFloat = 104
     
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 14)
-                .frame(width: 72, height: 28)
-                .foregroundStyle(.gray.opacity(0.4))
+        VStack(spacing: spacing) {
+            HStack {
+                ZStack {
+                    Rectangle()
+                        .frame(width: 64, height: 64)
+                        .foregroundStyle(.clear)
+                    
+                    Image(systemName: "hand.tap")
+                        .resizable()
+                        .frame(width: 48, height: 48)
+                        .scaledToFit()
+                }
+                
+                Text("Hold down your finger anywhere on your screen until the apps jiggle.")
+                    .font(.footnote)
+                    .fontWeight(.regular)
+                    .multilineTextAlignment(.leading)
+                    .padding()
+                
+                Spacer()
+            }.frame(height: lineH)
             
-            Image(systemName: "plus")
-                .imageScale(.medium)
-                .fontWeight(.medium)
-                .foregroundStyle(.black)
+            HStack {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14)
+                        .frame(width: 64, height: 32)
+                        .foregroundStyle(.gray.opacity(0.4))
+                    
+                    Image(systemName: "plus")
+                        .imageScale(.medium)
+                        .fontWeight(.medium)
+                }
+                
+                Text("Tap the + button at the top left corner, you will be present with some widget options.")
+                    .font(.footnote)
+                    .fontWeight(.regular)
+                    .multilineTextAlignment(.leading)
+                    .padding()
+                
+                Spacer()
+            }.frame(height: lineH)
+            
+            HStack {
+                Image("logo")
+                    .resizable()
+                    .frame(width: 64, height: 64)
+                    .scaledToFit()
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                
+                Text("Pick Daily Boost icon from the list. Then you can customize your widget.")
+                    .font(.footnote)
+                    .fontWeight(.regular)
+                    .multilineTextAlignment(.leading)
+                    .padding()
+                
+                Spacer()
+            }.frame(height: lineH)
         }
+        .padding(.horizontal)
     }
 }
+

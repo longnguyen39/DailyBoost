@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PurposeScreen: View {
     
+    @Environment(\.colorScheme) var mode
     let rows: [GridItem] = [GridItem(.flexible()),
                             GridItem(.flexible()),
                             GridItem(.flexible())] // 3 rows, space btw rows
@@ -21,16 +22,15 @@ struct PurposeScreen: View {
             VStack {
                 ThemeImgView()
                 
-                Text("What areas of life would you like to improve?")
-                    .font(.system(size: 28))
+                Text("What areas would you like to improve?")
+                    .font(.system(size: 20))
                     .fontWeight(.semibold)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.black)
                     .padding(.horizontal)
                     .padding(.top, -40)
                 
                 Text("Please choose at least 4 areas.")
-                    .font(.system(size: 16))
+                    .font(.subheadline)
                     .fontWeight(.regular)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.gray)
@@ -54,7 +54,7 @@ struct PurposeScreen: View {
                     TimeScreen(user: $user, pickedCateArr: $pickedCateArr)
                 } label: {
                     ContBtnView()
-                        .opacity(canContinue() ? 1.0 : 0.4)
+                        .opacity(canContinue() ? 1.0 : 0.6)
                 }
                 .disabled(!canContinue())
                 
@@ -64,7 +64,7 @@ struct PurposeScreen: View {
                     HStack(spacing: 3) {
                         Text("Already have an account?  - ")
                             .fontWeight(.regular)
-                            .foregroundStyle(.black)
+                            .foregroundStyle(mode == .light ? .black : .white)
                         Text(" Login")
                             .fontWeight(.bold)
                             .foregroundStyle(.blue)
@@ -90,12 +90,15 @@ struct PurposeScreen: View {
 
 struct PurposeCell: View {
     
+    @Environment(\.colorScheme) var mode
     let imgDim: CGFloat = 24
+    
     var purpose: String
     @Binding var user: User
     @Binding var pickedCateArr: [String]
     
-    @State var backgroundC: Color = .gray.opacity(0.2) //gotta use this method since LazyHGrid does NOT change backgroundC of any UI hidden in the far end of scrollV
+    @State var foregroundC: Color = .black
+    @State var backgroundC: Color = DARK_GRAY //gotta use this method since LazyHGrid does NOT change backgroundC of any UI hidden in the far end of scrollV
     
     var body: some View {
         HStack {
@@ -108,7 +111,7 @@ struct PurposeCell: View {
                 .font(.system(size: 16))
                 .fontWeight(.regular)
                 .lineLimit(1)
-                .foregroundStyle(.black)
+                .foregroundStyle(foregroundC)
                 .minimumScaleFactor(0.8)
         }
         .padding(.horizontal, 12)
@@ -121,14 +124,35 @@ struct PurposeCell: View {
 //                .foregroundStyle(isPicked() ? .black : .clear)
 //        }
         .padding(.leading, 12)
+        .onChange(of: mode) {
+            backgroundC = mode == .light ? LIGHT_GRAY : DARK_GRAY
+            foregroundC = mode == .light ? .black : .white
+        }
+        .onAppear {
+            backgroundC = mode == .light ? LIGHT_GRAY : DARK_GRAY
+            foregroundC = mode == .light ? .black : .white
+        }
         .onTapGesture {
             pickPurpose(purpose: purpose)
             backgroundC = returnBackgroundC()
+            foregroundC = returnForegroundC()
         }
     }
     
     private func returnBackgroundC() -> Color {
-        return isPicked() ? .yellow : .gray.opacity(0.2)
+        if mode == .light {
+            return isPicked() ? .color2 : LIGHT_GRAY
+        } else {
+            return isPicked() ? .color2 : DARK_GRAY
+        }
+    }
+    
+    private func returnForegroundC() -> Color {
+        if mode == .light {
+            return isPicked() ? .white : .black
+        } else {
+            return .white
+        }
     }
     
     private func pickPurpose(purpose: String) {

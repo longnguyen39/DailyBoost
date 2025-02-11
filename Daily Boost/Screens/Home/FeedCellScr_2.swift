@@ -17,6 +17,7 @@ struct FeedCellScr: View {
     @Binding var showCateOnTop: Bool
     
     @State var isLiked: Bool = false
+    @State var opaLike: CGFloat = 0
     
     var body: some View {
         ZStack {
@@ -25,21 +26,35 @@ struct FeedCellScr: View {
             }
             
             VStack(alignment: .center) {
-                Text(quote.script.isEmpty ? "Loading..." : quote.script)
-                    .font(.system(size: 32))
-                    .fontWeight(.regular)
-                    .foregroundStyle(isDarkText ?? false ? .black : .white)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
+                ZStack {
+                    Text(quote.script.isEmpty ? "Loading..." : quote.script)
+                        .font(.system(size: 28))
+                        .fontWeight(.regular)
+                        .foregroundStyle(isDarkText ?? false ? .black : .white)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                    
+                    Image(systemName: "heart.fill")
+                        .foregroundStyle(.red)
+                        .font(.system(size: 80))
+                        .scaleEffect(isLiked ? 1 : 0)
+                        .opacity(opaLike)
+                        .animation(.interpolatingSpring(stiffness: 170, damping: 15), value: isLiked)
+                }
                 
                 Text(quote.author.isEmpty ? "" : "-\(quote.author)")
-                    .font(.system(size: 20))
+                    .font(.system(size: 16))
                     .fontWeight(.regular)
                     .foregroundStyle(isDarkText ?? false ? .black : .white)
                     .padding(.top, 4)
                     .padding(.horizontal)
             }
             .offset(x: 0, y: -16) //up from center a bit
+            .onTapGesture(count: 2) {
+                Task {
+                    await likeQuote()
+                }
+            }
             
             VStack {
                 Spacer()
@@ -73,6 +88,8 @@ struct FeedCellScr: View {
                 .padding(.bottom, 160)
             }
         }
+        .sensoryFeedback(.impact(weight: .medium, intensity: 1), trigger: isLiked)
+
     }
     
 //MARK: - Function
@@ -92,13 +109,23 @@ struct FeedCellScr: View {
             await ServiceUpload.shared.unLikeQuote(userID: uid, quote: quote, likeQuote: nil)
             isLiked = false
         } else {
-            isLiked = true
-            await ServiceUpload.shared.uploadLikeQuote(userID: uid, quote: quote)
+            await likeQuote()
         }
     }
     
+    private func likeQuote() async {
+        let uid = userID ?? ""
+        isLiked = true
+        opaLike = 1
+        await ServiceUpload.shared.uploadLikeQuote(userID: uid, quote: quote)
+        
+        try? await Task.sleep(nanoseconds: 0_900_000_000)//delay 9ms
+        opaLike = 0
+    }
+    
     private func quoteToShare() -> Image {
-        let shareV = shareQuoteImg(quote: quote, isDarkText: isDarkText ?? false)
+        let uiImg = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
+        let shareV = shareQuoteImg(quote: quote, isDarkText: isDarkText ?? false, themeUIImage: uiImg)
         let renderer = ImageRenderer(content: shareV)
         
         if let uiImage = renderer.uiImage {
@@ -111,7 +138,7 @@ struct FeedCellScr: View {
 }
 
 #Preview {
-    FeedCellScr(quote: Quote.quoteFirst, showInfo: .constant(false), showCateOnTop: .constant(true))
+    FeedCellScr(quote: Quote.mockQuote, showInfo: .constant(false), showCateOnTop: .constant(true))
 }
 
 //MARK: -----------------------------------------------
@@ -163,6 +190,7 @@ struct shareQuoteImg: View {
     
     var quote: Quote
     var isDarkText: Bool
+    var themeUIImage: UIImage
     
     var body: some View {
         VStack {
@@ -189,7 +217,8 @@ struct shareQuoteImg: View {
         }
         .frame(width: UIScreen.width, height: UIScreen.height)
         .background {
-            Image("wall1")
+//            Image("wall1")
+            Image(uiImage: themeUIImage)
                 .resizable()
                 .scaledToFill()
                 .frame(width: UIScreen.width, height: UIScreen.height)

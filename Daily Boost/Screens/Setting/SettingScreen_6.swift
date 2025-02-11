@@ -9,6 +9,9 @@ import SwiftUI
 
 struct SettingScreen: View {
     
+    //only for ReminderScr
+    var chosenCatePArr: [String]
+    
     @Binding var user: User
     @Binding var showSetting: Bool
     @Binding var showCateTopLeft: Bool
@@ -18,11 +21,12 @@ struct SettingScreen: View {
             ScrollView {
                 VStack(spacing: 8) {
                     ToggleSection(showCateTopLeft: $showCateTopLeft)
-                        .padding(.horizontal)
                         .padding(.top)
+                    
                     SubscriptionSection(user: $user)
                     
-                    AccountSection(user: $user)
+                    AccountSection(user: $user, chosenCatePArr: chosenCatePArr)
+                    
 //                    SupportSection(user: $user) //later ver
                 }
             }
@@ -37,7 +41,8 @@ struct SettingScreen: View {
                             .imageScale(.large)
                             .fontWeight(.semibold)
                     }
-
+//                    .sensoryFeedback(.impact(weight: .heavy, intensity: 1), trigger: showSetting)
+                    
                 }
             }
         }
@@ -45,13 +50,87 @@ struct SettingScreen: View {
 }
 
 #Preview {
-    SettingScreen(user: .constant(User.initState), showSetting: .constant(true), showCateTopLeft: .constant(true))
+    SettingScreen(chosenCatePArr: [], user: .constant(User.initState), showSetting: .constant(true), showCateTopLeft: .constant(true))
 }
 
 //MARK: ---------------------------------------------
 
+struct SettingRow: View {
+    
+    @Environment(\.colorScheme) var mode
+
+    var imgName: String
+    var context: String
+        
+    var body: some View {
+        HStack {
+            Image(systemName: imgName)
+                .imageScale(.medium)
+                .padding(.trailing, 8)
+                .foregroundStyle(mode == .light ? .black : .white)
+            
+            Text(context)
+                .font(.subheadline)
+                .fontWeight(.regular)
+                .foregroundStyle(mode == .light ? .black : .white)
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .imageScale(.small)
+                .foregroundStyle(.gray)
+        }
+        .padding(.horizontal)
+        .padding(.bottom)
+    }
+}
+
+//MARK: ------------------------------------------------
+
+struct ToggleSection: View {
+    
+    @Environment(\.colorScheme) var mode
+    @Binding var showCateTopLeft: Bool
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("*Display the quote category on top left corner")
+                    .font(.caption)
+                    .fontWeight(.regular)
+                    .foregroundStyle(.gray)
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.top, 12)
+            
+            Toggle("Show Category", isOn: $showCateTopLeft)
+                .tint(.color3)
+                .fontWeight(.medium)
+                .padding(.horizontal)
+                .padding(.bottom)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(lineWidth: 0.5)
+                .foregroundStyle(Color(.systemGray4))
+                .shadow(color: .black.opacity(0.4), radius: 2)
+        }
+        .background(mode == .light ? Color.white : DARK_GRAY)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(.horizontal)
+        .onChange(of: showCateTopLeft) {
+            UserDefaults.standard.set(showCateTopLeft, forKey: UserDe.show_top_left)
+        }
+        .sensoryFeedback(.selection, trigger: showCateTopLeft)
+    }
+}
+
+//MARK: ------------------------------------------------
+
 struct SubscriptionSection: View {
     
+    @Environment(\.colorScheme) var mode
     @Binding var user: User
     
     var body: some View {
@@ -67,13 +146,20 @@ struct SubscriptionSection: View {
         
         VStack {
             NavigationLink {
-                ProfileScreen(user: $user)
+                Text("Paid features and subscriptions will be available in the next version.")
+                    .font(.headline)
+                    .fontWeight(.medium)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.gray)
+                    .padding()
             } label: {
                 SettingRow(imgName: "crown", context: "Manage subscription")
                     .padding(.top)
             }
         }
-        .overlay{
+        .background(mode == .light ? Color.white : DARK_GRAY)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(lineWidth: 0.5)
                 .foregroundStyle(Color(.systemGray4))
@@ -85,8 +171,11 @@ struct SubscriptionSection: View {
 
 struct AccountSection: View {
     
-    @Binding var user: User
+    @Environment(\.colorScheme) var mode
     
+    @Binding var user: User
+    var chosenCatePArr: [String]
+        
     var body: some View {
         HStack {
             Text("Account")
@@ -98,7 +187,7 @@ struct AccountSection: View {
         .padding(.top, 12)
         .padding(.horizontal)
         
-        VStack {
+        VStack(spacing: 8) {
             NavigationLink {
                 ProfileScreen(user: $user)
             } label: {
@@ -106,27 +195,39 @@ struct AccountSection: View {
                     .padding(.top)
             }
             
+            Divider()
+                .padding(.horizontal)
+                .padding(.top, -10)
+            
             NavigationLink {
                 LikeQuoteScreen(user: $user)
             } label: {
                 SettingRow(imgName: "suit.heart", context: "Liked Quotes")
-                    .padding(.top, 8)
             }
             
+            Divider()
+                .padding(.horizontal)
+                .padding(.top, -10)
+            
             NavigationLink {
-                ReminderScreen(user: $user)
+                ReminderScreen(user: $user, chosenCatePArr: chosenCatePArr)
             } label: {
                 SettingRow(imgName: "bell", context: "Reminder")
-                    .padding(.top, 8)
             }
             
-            NavigationLink {
-                ProfileScreen(user: $user)
-            } label: {
-                SettingRow(imgName: "widget.small", context: "Widget")
-                    .padding(.top, 8)
-            }
+            //Widget for later version
+//            Divider()
+//                .padding(.horizontal)
+//                .padding(.top, -10)
+//            
+//            NavigationLink {
+//                WidgetInstructScreen()
+//            } label: {
+//                SettingRow(imgName: "widget.small", context: "Widget")
+//            }
         }
+        .background(mode == .light ? Color.white : DARK_GRAY)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay{
             RoundedRectangle(cornerRadius: 12)
                 .stroke(lineWidth: 0.5)
@@ -182,71 +283,5 @@ struct SupportSection: View {
                 .shadow(color: .black.opacity(0.4), radius: 2)
         }
         .padding(.horizontal)
-    }
-}
-
-//MARK: ---------------------------------------------
-
-struct SettingRow: View {
-    
-    var imgName: String
-    var context: String
-    
-    var body: some View {
-        HStack {
-            Image(systemName: imgName)
-                .imageScale(.medium)
-                .foregroundStyle(.black)
-                .padding(.trailing, 8)
-            
-            Text(context)
-                .font(.subheadline)
-                .fontWeight(.regular)
-                .foregroundStyle(.black)
-            
-            Spacer()
-            
-            Image(systemName: "chevron.right")
-                .imageScale(.small)
-                .foregroundStyle(.gray)
-        }
-        .padding(.horizontal)
-        .padding(.bottom)
-    }
-}
-
-//MARK: ------------------------------------------------
-
-struct ToggleSection: View {
-    
-    @Binding var showCateTopLeft: Bool
-    
-    var body: some View {
-        VStack {
-            HStack {
-                Text("*Display the quote category on top left corner")
-                    .font(.caption)
-                    .fontWeight(.regular)
-                    .foregroundStyle(.gray)
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.top, 12)
-            
-            Toggle("Show Category", isOn: $showCateTopLeft)
-                .tint(.yellow)
-                .fontWeight(.medium)
-                .padding(.horizontal)
-                .padding(.bottom)
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(lineWidth: 0.5)
-                .foregroundStyle(Color(.systemGray4))
-                .shadow(color: .black.opacity(0.4), radius: 2)
-        }
-        .onChange(of: showCateTopLeft) { _ in
-            UserDefaults.standard.set(showCateTopLeft, forKey: UserDe.show_top_left)
-        }
     }
 }

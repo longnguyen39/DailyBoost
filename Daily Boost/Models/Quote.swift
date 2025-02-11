@@ -20,10 +20,8 @@ struct Quote: Codable, Hashable { //Hashable when used in ForEach
     
 //MARK: - quotes will be used
     
-    static var quoteFirst: Quote = Quote(orderNo: 0, script: "Welcome to Daily Boost! Please swipe up to see your quotes.", title: "", category: "Welcome", isFictional: false, author: "")
-    
-    static var quoteEmptyArr: [Quote] = [Quote(orderNo: 0, script: "Please chose a category to display quotes", title: "", category: "Welcome", isFictional: false, author: "")]
-    
+    static var mockQuote: Quote = Quote(orderNo: 0, script: "No more quote!", title: "", category: "Welcome", isFictional: false, author: "")
+        
 //MARK: - purpose quotes
     
     static var purposeStrArr: [String] = [

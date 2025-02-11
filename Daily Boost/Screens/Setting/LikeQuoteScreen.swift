@@ -10,17 +10,20 @@ import SwiftUI
 struct LikeQuoteScreen: View {
     
     @State var likeQuotes: [LikeQuote] = []
+    @State var likeCount: Int = 0
     @State var likeQPicked: LikeQuote = .mockData
+    
     @State var showLoading: Bool = false
     @State var showADelete: Bool = false
-    @State var paginate: Bool = false
+    
+    @State var needPagi: Bool = false
     
     @Binding var user: User
     
     var body: some View {
         ZStack {
             ScrollView {
-                VStack {
+                LazyVStack { //only load when we scroll to it
                     if likeQuotes.isEmpty {
                         Text("You have not liked any quote yet.")
                             .font(.title2)
@@ -34,32 +37,52 @@ struct LikeQuoteScreen: View {
                             .padding()
                         
                         ForEach(likeQuotes, id: \.self) { likeQuote in
-                            LikeQuoteCell(quote: likeQuote, likeQPicked: $likeQPicked, showADelete: $showADelete, paginate: $paginate)
+                            LikeQuoteCell(quote: likeQuote, likeQPicked: $likeQPicked, showADelete: $showADelete)
                                 .padding(.bottom, 8)
+                                .transition(.scale)
                         }
+                        
+                        if needPagi {
+                            Text(". . . . . .")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.black)
+                                .padding(.all, 12)
+                                .padding(.bottom)
+                                .onAppear {
+                                    Task {
+                                        await paginateLikeQ()
+                                    }
+                                }
+                        }
+                        
+                        Divider()
+                            .padding()
+                            .opacity(0.1)
                     }
                 }
             }
+            
+            if showLoading {
+                LoadingView()
+            }
         }
-        .navigationTitle("Liked Quotes")
+        .navigationTitle("\(likeCount) Liked Quotes")
+        .sensoryFeedback(.decrease, trigger: likeCount)
         .onAppear {
             Task {
                 await fetchLikeQuotes()
             }
         }
-//        .onChange(of: paginate) { _ in
-//            Task {
-//                if paginate {
-//                    await paginateLikeQ()
-//                    paginate = false
-//                }
-//            }
-//        }
+        .onChange(of: likeQuotes) {
+            needPagi = likeQuotes.count < likeCount
+        }
         .confirmationDialog("Unlike quote?", isPresented: $showADelete, titleVisibility: .visible, actions: {
             Button("Cancel", role: .cancel, action: {})
             Button("Remove from Likes", role: .destructive, action: {
                 Task {
                     await removeLikeQuote()
+                    likeCount -= 1
                 }
             })
         })
@@ -67,6 +90,9 @@ struct LikeQuoteScreen: View {
     
     private func fetchLikeQuotes() async {
         showLoading = true
+        
+        likeCount = await ServiceFetch.shared.fetchLikeQCount(userID: user.userID)
+        
         do {
             likeQuotes = try await ServiceFetch.shared.fetchLikeQuotes(userID: user.userID)
             
@@ -78,24 +104,27 @@ struct LikeQuoteScreen: View {
         }
     }
     
-//    private func paginateLikeQ() async {
-//        showLoading = true
-//        do {
-//            likeQuotes += try await ServiceFetch.shared.paginateLikeQuotes(userID: user.userID)
-//            
-//            try? await Task.sleep(nanoseconds: 0_100_000_000)
-//            showLoading = false
-//        } catch {
-//            print("DEBUG: Failed to paginate like quotes: \(error.localizedDescription)")
-//            showLoading = false
-//        }
-//    }
+    private func paginateLikeQ() async {
+        print("DEBUG: paginating likeQ...")
+        showLoading = true
+        do {
+            likeQuotes += try await ServiceFetch.shared.configPagiLikeQArr(userID: user.userID)
+            
+            try? await Task.sleep(nanoseconds: 0_100_000_000)
+            showLoading = false
+        } catch {
+            print("DEBUG: Failed to paginate like quotes: \(error.localizedDescription)")
+            showLoading = false
+        }
+    }
     
     private func removeLikeQuote() async {
         await ServiceUpload.shared.unLikeQuote(userID: user.userID, quote: nil, likeQuote: likeQPicked)
         for likeQ in likeQuotes {
             if likeQPicked.catePath == likeQ.catePath {
-                likeQuotes = likeQuotes.filter() { $0.catePath != likeQPicked.catePath
+                withAnimation {
+                    likeQuotes = likeQuotes.filter() { $0.catePath != likeQPicked.catePath
+                    }
                 }
             }
         }
@@ -110,10 +139,12 @@ struct LikeQuoteScreen: View {
 
 struct LikeQuoteCell: View {
     
+    @Environment(\.colorScheme) var mode
+    @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
+
     var quote: LikeQuote
     @Binding var likeQPicked: LikeQuote
     @Binding var showADelete: Bool
-    @Binding var paginate: Bool
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -121,7 +152,6 @@ struct LikeQuoteCell: View {
             Text(quote.script.isEmpty ? "Loading..." : quote.script)
                 .font(.system(size: 16))
                 .fontWeight(.regular)
-                .foregroundStyle(.black)
                 .multilineTextAlignment(.leading)
                 .padding(.horizontal)
                 .padding(.top)
@@ -142,19 +172,14 @@ struct LikeQuoteCell: View {
                     Image(systemName: "trash")
                         .imageScale(.medium)
                         .fontWeight(.medium)
-                        .foregroundStyle(.black)
                 }
                 
-                Button {
-                    //share
-                } label: {
+                ShareLink(item: quoteToShare(), preview: SharePreview("Share Quote", image: quoteToShare())) {
                     Image(systemName: "square.and.arrow.up")
                         .imageScale(.medium)
                         .fontWeight(.medium)
-                        .foregroundStyle(.black)
                         .padding(.horizontal)
                 }
-
             }
             .padding(.top, 4)
             .padding(.bottom)
@@ -165,6 +190,8 @@ struct LikeQuoteCell: View {
                 .foregroundStyle(Color(.systemGray4))
                 .shadow(color: .black.opacity(0.4), radius: 2)
         }
+        .background(mode == .light ? Color.white : DARK_GRAY)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .padding(.horizontal)
         .onAppear {
 //            //check for last likeQ
@@ -175,6 +202,19 @@ struct LikeQuoteCell: View {
 //                print("DEBUG_LikeQScr: paginating likeQ...")
 //                paginate = true
 //            }
+        }
+    }
+    
+    private func quoteToShare() -> Image {
+        let shareQ = Quote(orderNo: 0, script: quote.script, title: "", category: quote.catePath, isFictional: false, author: quote.author)
+        let uiImg = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
+        let shareV = shareQuoteImg(quote: shareQ, isDarkText: isDarkText ?? false, themeUIImage: uiImg)
+        let renderer = ImageRenderer(content: shareV)
+        
+        if let uiImage = renderer.uiImage {
+            return Image(uiImage: uiImage)
+        } else {
+            return Image("wall1")
         }
     }
     

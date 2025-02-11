@@ -128,18 +128,17 @@ struct Quotes {
 //---------------------------------------------------------
 
     
-    //Now, we are uploading FICTIONAL quotes
+    //Now, we are uploading (isUploadingFiction) quotes
     static func getFictionOrNot() {
-        isUploadingFiction = true
+        isUploadingFiction = false
     }
     static let quoteUploadArr: [String] = [
         
         //template:
         //"1.3>Someone’s sitting in the shade today because someone planted a tree a long time ago.*Warren Buffet",
+       
         
-        "6.8>Just keep swimming.*Dory (Finding Nemo)"
 
-        
         
         
     ]

@@ -44,7 +44,7 @@ struct InfoScreen: View {
 }
 
 #Preview {
-    InfoScreen(showInfo: .constant(true), quoteInfo: .constant(Quote.quoteFirst))
+    InfoScreen(showInfo: .constant(true), quoteInfo: .constant(Quote.mockQuote))
 }
 
 //MARK: ---------------------------------------------

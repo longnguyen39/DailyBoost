@@ -9,6 +9,8 @@ import SwiftUI
 
 struct EmailScreen: View {
     
+    @Environment(\.colorScheme) var mode
+
     @FocusState private var keyboardFocused: Bool //keyboard popup
 
     @Binding var user: User
@@ -23,15 +25,17 @@ struct EmailScreen: View {
     var body: some View {
         ZStack {
             VStack {
-                Text("What's your email?")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .padding(.top, 24)
+//                Text("What's your email?")
+//                    .font(.title2)
+//                    .fontWeight(.bold)
+//                    .padding(.top, 24)
                 
                 Text("We need your email to back up your data")
                     .font(.footnote)
                     .foregroundStyle(.gray)
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                    .padding(.top, 12)
                 
                 //userInput is store in viewModel.email
                 TextField("Enter your email", text: $user.email)
@@ -52,7 +56,7 @@ struct EmailScreen: View {
                     }
                 } label: {
                     ContBtnView(context: "Let's go!")
-                        .opacity(validEmail() ? 1 : 0.5)
+                        .opacity(validEmail() ? 1 : 0.4)
                 }
                 .padding(.vertical)
                 .disabled(!validEmail())
@@ -63,7 +67,7 @@ struct EmailScreen: View {
                     HStack(spacing: 3) {
                         Text("Already have an account?  - ")
                             .fontWeight(.regular)
-                            .foregroundStyle(.black)
+                            .foregroundStyle(mode == .light ? .black : .white)
                         Text(" Login")
                             .fontWeight(.bold)
                             .foregroundStyle(.blue)
@@ -88,7 +92,7 @@ struct EmailScreen: View {
                 LoadingView()
             }
         }
-        .navigationTitle("Authentication")
+        .navigationTitle("Email")
         .alert("Oops", isPresented: $showError) {
             Button("Try Again", role: .cancel, action: {})
         } message: {

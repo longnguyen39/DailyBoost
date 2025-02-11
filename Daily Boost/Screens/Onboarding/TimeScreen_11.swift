@@ -14,15 +14,18 @@ struct TimeScreen: View {
     @Binding var pickedCateArr: [String]
     var timeWidthFrame: CGFloat = 80
     
+    @State var notiGranted: Bool = false
+    @State var showAlert: Bool = false
+    @State var message: String = ""
+    
     var body: some View {
         VStack {
             ThemeImgView()
             
             Text("Set daily reminders")
-                .font(.system(size: 24))
+                .font(.system(size: 20))
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.black)
                 .padding(.horizontal)
                 .padding(.top, -40)
             
@@ -33,13 +36,40 @@ struct TimeScreen: View {
             
             Spacer()
             
-            NavigationLink {
-                WidgetScreen(user: $user, pickedCateArr: $pickedCateArr)
-            } label: {
-                ContBtnView(context: "Accept and Continue")
+            ZStack {
+                if notiGranted {
+                    NavigationLink {
+                        WidgetScreen(
+                            notiGranted: message == "You have allowed notification!",
+                            user: $user,
+                            pickedCateArr: $pickedCateArr)
+                    } label: {
+                        ContBtnView(context: "Continue")
+                    }
+                } else {
+                    Button {
+                        NotificationManager.shared.requestAuthorization { granted in
+                            if granted {
+                                message = "You have allowed notification!"
+                            } else {
+                                message = "Please enable notification in your Setting"
+                            }
+                            showAlert.toggle()
+                        }
+                    } label: {
+                        ContBtnView(context: "Allow Notifications")
+                    }
+                }
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .alert("Hey", isPresented: $showAlert) {
+            Button("OK", role: .cancel, action: {
+                notiGranted.toggle()
+            })
+        } message: {
+            Text("\(message)")
+        }
     }
 }
 
@@ -60,13 +90,14 @@ struct HowMany: View {
             Text("How many")
                 .font(.system(size: 18))
                 .fontWeight(.medium)
-                .foregroundStyle(.black)
                 .padding()
             
             Spacer()
             
             Button {
-                howMany -= 1
+                if howMany > 2 {
+                    howMany -= 1
+                }
             } label: {
                 Image(systemName: "minus.circle")
                     .imageScale(.large)
@@ -77,22 +108,23 @@ struct HowMany: View {
             Text("\(howMany)x")
                 .font(.system(size: 18))
                 .fontWeight(.regular)
-                .foregroundStyle(.black)
                 .frame(width: widthFrame)
                 .padding(.horizontal, 12)
             
             Button {
-                howMany += 1
+                if howMany < 24 {
+                    howMany += 1
+                }
             } label: {
                 Image(systemName: "plus.circle")
                     .imageScale(.large)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(howMany == 24 ? .gray : .blue)
                     .padding(.trailing)
             }
         }
         .frame(width: UIScreen.width-48, height: 64)
-        .background(.gray.opacity(0.4))
+        .background(DARK_GRAY)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
@@ -108,39 +140,41 @@ struct TimeView: View {
             Text(context)
                 .font(.system(size: 18))
                 .fontWeight(.medium)
-                .foregroundStyle(.black)
                 .padding()
             
             Spacer()
             
             Button {
-                time -= 1
+                if time > 0 {
+                    time -= 1
+                }
             } label: {
                 Image(systemName: "minus.circle")
                     .imageScale(.large)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(time == 0 ? .gray : .blue)
             }
             
             Text("\(time):00 \(timeFrame())")
                 .font(.system(size: 18))
                 .fontWeight(.regular)
-                .foregroundStyle(.black)
                 .frame(width: widthFrame)
                 .padding(.horizontal, 12)
             
             Button {
-                time += 1
+                if time < 11 {
+                    time += 1
+                }
             } label: {
                 Image(systemName: "plus.circle")
                     .imageScale(.large)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(time == 11 ? .gray : .blue)
                     .padding(.trailing)
             }
         }
         .frame(width: UIScreen.width-48, height: 64)
-        .background(.gray.opacity(0.4))
+        .background(DARK_GRAY)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal)
     }

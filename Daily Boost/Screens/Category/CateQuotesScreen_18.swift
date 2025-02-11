@@ -10,44 +10,40 @@ import SwiftUI
 struct CateQuotesScreen: View {
     @AppStorage(CATEPATH_CATEQUOTES) var catePath: String?
 //    @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
-    
+        
     @Binding var showCateQuotesScr: Bool
     @Binding var chosenCatePathArr: [String]
-    @Binding var removeCateForYou: String
-    @Binding var addCateForYou: String
     
     @State var quoteArr: [Quote] = []
-    @State var duplArr: [Int] = []
+    @State var histIntArr: [Int] = []
     @State var themeUIImage: UIImage = UIImage(named: "loading")!
         
     var body: some View {
         ZStack {
-            if #available(iOS 17.0, *) {
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(quoteArr, id: \.self) { quote in
-                            FeedCellScr(quote: quote, showInfo: .constant(false), showCateOnTop: .constant(false))
-                                .frame(width: UIScreen.width, height: UIScreen.height)
-                                .onAppear {
-                                    Task {
-                                        try await cellAppear(quote: quote)
-                                    }
-                                } //cell appear after each swipe
-                        }
-                    }
-                    .scrollTargetLayout()
-                }
-                .scrollTargetBehavior(.paging)
-                .scrollIndicators(.hidden)
-                .onAppear {
-                    Task {
-                        await fetchQuotes()
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(quoteArr, id: \.self) { quote in
+                        FeedCellScr(quote: quote, showInfo: .constant(false), showCateOnTop: .constant(false))
+                            .frame(width: UIScreen.width, height: UIScreen.height)
+                            .onAppear {
+                                Task {
+                                    await cellAppear(quote: quote)
+                                }
+                            } //cell appear after each swipe
                     }
                 }
-                .ignoresSafeArea()
-            } else {
-                Text("DEBUG_18: Damn! update to iOS 17+!")
+                .scrollTargetLayout()
             }
+            .scrollTargetBehavior(.paging)
+            .scrollIndicators(.hidden)
+            .onAppear {
+                Task {
+                    await appendANewQ()
+                    UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.quote_last)
+                }
+            }
+            .ignoresSafeArea()
+            
             
             VStack {
                 
@@ -116,62 +112,66 @@ struct CateQuotesScreen: View {
         
     }
     
-    //MARK: - Functions
+//MARK: - Functions
     
-    private func cellAppear(quote: Quote) async throws {
-        print("DEBUG_18: cell \(quote.orderNo)")
-        let last = UserDefaults.standard.object(forKey: UserDe.quote_last) as? String ?? "nil"
+    private func cellAppear(quote: Quote) async {
         
-        if quote.script == last {
-            print("DEBUG_18: last quote")
-            do {
-                try await continueFetch()
-            } catch {
-                print("DEBUG_18: error fetching quotes, \(error.localizedDescription)")
+        //update hist
+        let arr = histIntArr.filter { $0 == quote.orderNo }
+        if arr.isEmpty { //no dupl
+            histIntArr.append(quote.orderNo)
+            
+            //check last quote b4 fetching
+            let last = UserDefaults.standard.object(forKey: UserDe.quote_last) as? String ?? "nil"
+            if quote.script == last {
+                print("DEBUG_18: last quote")
+                await appendANewQ()
+                UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.quote_last)
             }
+            
+        } else { // when user swipe up (rewatch quotes)
+            print("DEBUG_18: dupl, histIntArr no change")
         }
     }
     
-    private func fetchQuotes() async {
+    private func appendANewQ() async {
         guard let cateP = catePath else { return }
+        let countNF = await  ServiceFetch.shared.fetchQuoteCount(title: cateP.getTitle(), cate: cateP.getCate(), isFiction: false)
+        let countF = await ServiceFetch.shared.fetchQuoteCount(title: cateP.getTitle(), cate: cateP.getCate(), isFiction: true)
         
-        quoteArr = await ServiceFetch.shared.fetchQuotesFromACate(title: cateP.getTitle(), cate: cateP.getCate())
-        UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.quote_last)
-        
-        for quote in quoteArr {
-            duplArr.append(quote.orderNo)
+        if histIntArr.count < (countNF + countF) {
+            var newQ = Quote.mockQuote
+            var inHist = true
+            
+            while inHist {
+                let randInt = await ServiceFetch.shared.generateRandInt(title: cateP.getTitle(), cate: cateP.getCate(), showOneCate: true, count_nf: countNF, count_f: countF) //avoid refetching countF and NF
+                newQ = await ServiceFetch.shared.fetchAQuote(title: cateP.getTitle(), cate: cateP.getCate(), orderNo: randInt)
+                inHist = existInHist(orderNo: randInt)
+            }
+            quoteArr.append(newQ)
+            print("DEBUG_18: quoteArr count is \(quoteArr.count)")
+        } else {
+            print("DEBUG_18: Already fetch all quotes of \(quoteArr[0].category)")
         }
+        
     }
     
-    private func continueFetch() async throws {
-        //handle int arr
-        guard let cateP = catePath else { return }
-        var randArr = try await ServiceFetch.shared.randIntArr(title: cateP.getTitle(), cate: cateP.getCate(), both: true)
-        randArr = randArr.filter { !duplArr.contains($0) }
-        if randArr.isEmpty {
-            print("DEBUG_18: no more quotes on \(cateP)")
-            return
+    private func existInHist(orderNo: Int) -> Bool {
+        let arr = histIntArr.filter { $0 == orderNo }
+        if !arr.isEmpty {  //found in histArr
+            print("DEBUG_18: found order \(orderNo) in histArr")
+            return true
+        } else {
+            return false
         }
-        
-        //fetch new quotes and append to current arr
-        let newQuoteArr = try await ServiceFetch.shared.fetchQuotes(title: cateP.getTitle(), cate: cateP.getCate(), randArr: randArr)
-        if !newQuoteArr.isEmpty {
-            quoteArr += newQuoteArr
-        }
-        UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.quote_last)
-        
-        duplArr += randArr
-        print("DEBUG_18: duplArr now \(duplArr)")
     }
     
     private func followFunc() {
         if let cateP = catePath {
             if isFollowing() {
                 chosenCatePathArr = chosenCatePathArr.filter { $0 != cateP }
-                removeCateForYou = cateP
             } else {
                 chosenCatePathArr.append(cateP)
-                addCateForYou = cateP
             }
         } else {
             print("DEBUG_18: catePath not in UserD")
@@ -190,5 +190,5 @@ struct CateQuotesScreen: View {
 }
 
 #Preview {
-    CateQuotesScreen(showCateQuotesScr: .constant(false), chosenCatePathArr: .constant(["haha"]), removeCateForYou: .constant("haha"), addCateForYou: .constant("hha"))
+    CateQuotesScreen(showCateQuotesScr: .constant(false), chosenCatePathArr: .constant(["haha"]))
 }

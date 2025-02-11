@@ -9,27 +9,25 @@ import SwiftUI
 
 struct CateCell: View {
     
-    let imgDim: CGFloat = 40
-    let frameDim: CGFloat = 96
+    @Environment(\.colorScheme) var mode
+    let imgDim: CGFloat = 32
+    let frameDim: CGFloat = 88
     
     var cateP: String
     @Binding var chosenCatePathArr: [String]
-    @Binding var removeCateForYou: String //for color
-    @Binding var addCateForYou: String //for color
     @Binding var showCateQuotes: Bool
-
-    @State var mainColor: Color = .clear
+    
     
     var body: some View {
         ZStack {
             Rectangle()
-                .frame(width: frameDim + 24, height: frameDim)
+                .frame(width: frameDim + 32, height: frameDim)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                .foregroundStyle(Color(.systemGray6))
+                .foregroundStyle(mode == .light ? LIGHT_GRAY : DARK_GRAY)
                 .overlay {
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(lineWidth: 2)
-                        .foregroundStyle(mainColor)
+                        .stroke(lineWidth: 1.5)
+                        .foregroundStyle(isPicked() ? .color3 : .clear)
                 }
             
             VStack {
@@ -48,17 +46,19 @@ struct CateCell: View {
                         .resizable()
                         .frame(width: 8, height: 8)
                         .fontWeight(.bold)
-                        .foregroundStyle(isPicked() ? .black : .clear)
+                        .foregroundStyle(isPicked() ? .white : .clear)
                         .padding(.all, 6)
-                        .background(mainColor)
+                        .background(isPicked() ? .color3 : .clear)
                         .clipShape(.circle)
-                        .padding(.all, 6)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 6)
                 }
+                
                 Spacer()
+                
                 Text(cateP.getCate()) //caption
                     .font(.caption)
                     .fontWeight(.regular)
-                    .foregroundStyle(.black)
                     .minimumScaleFactor(0.8)
                     .padding(.all, 8)
                     .frame(width: frameDim + 16)
@@ -66,33 +66,23 @@ struct CateCell: View {
             }
             
         }
-        .onAppear {
-            mainColor = returnBackgroundC()
-        }
+        .sensoryFeedback(.increase, trigger: chosenCatePathArr)
         .onTapGesture {
-            pickCate()
-            mainColor = returnBackgroundC()
-        }
-        .onChange(of: removeCateForYou) { _ in
-            if removeCateForYou == cateP {
-                mainColor = .clear
-            }
-        }
-        .onChange(of: addCateForYou) { _ in
-            if addCateForYou == cateP {
-                mainColor = .yellow
+            withAnimation {
+                pickCate()
             }
         }
         .onLongPressGesture(minimumDuration: 0.3) { //0.3s
             showCateQuotes.toggle()
             UserDefaults.standard.set(cateP, forKey: CATEPATH_CATEQUOTES)
         }
+        
     }
     
-    //MARK: - Functions
+//MARK: - Functions
     
     private func returnBackgroundC() -> Color {
-        return isPicked() ? .yellow : .clear
+        return isPicked() ? .color3 : .clear
     }
     
     private func pickCate() {
@@ -130,5 +120,5 @@ struct CateCell: View {
 }
 
 #Preview {
-    CateCell(cateP: "Haha", chosenCatePathArr: .constant(Quote.purposeStrArr), removeCateForYou: .constant("ahha"), addCateForYou: .constant("haha"), showCateQuotes: .constant(false))
+    CateCell(cateP: "Haha", chosenCatePathArr: .constant(Quote.purposeStrArr), showCateQuotes: .constant(false))
 }

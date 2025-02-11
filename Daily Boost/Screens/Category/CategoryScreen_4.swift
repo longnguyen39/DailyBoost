@@ -4,11 +4,14 @@
 //
 //  Created by Long Nguyen on 5/23/24.
 //
+//let GRAY_DARK = Color.gray.opacity(0.2)
 
 import SwiftUI
 
 struct CategoryScreen: View {
     
+    @Environment(\.scenePhase) var scenePhase
+
     @AppStorage(currentUserDefaults.userID) var userID: String? //this on constantly pull data from userDefaults (if data from userDefaults change, it also changes live)
 
     @Binding var showCate: Bool
@@ -20,10 +23,7 @@ struct CategoryScreen: View {
     
     @State var showCateQuotesScr: Bool = false
     @State var isChanged: Bool = false
-    
-    @State var removeCateForYou: String = ""
-    @State var addCateForYou: String = ""
-    
+        
     @State var fictionPicked: FictionOption = .both
     
     var body: some View {
@@ -33,12 +33,12 @@ struct CategoryScreen: View {
                     FictionSection(fictionPicked: $fictionPicked, isChanged: $isChanged)
                         .padding()
                     
-                    YourCateHScrollV(chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, showCateQuotes: $showCateQuotesScr)
-                        .padding(.bottom)
-                        .padding(.top, 8)
+                    YourCateHScrollV(chosenCatePathArr: $chosenCatePathArr, showCateQuotes: $showCateQuotesScr)
+                        .padding(.bottom, 32)
+                        .padding(.top)
                     
                     ForEach(CateTitle.allCases, id: \.self) { order in
-                        CateHScrollV(caseOrder: order, chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, addCateForYou: $addCateForYou, showCateQuotes: $showCateQuotesScr)
+                        CateHScrollV(caseOrder: order, chosenCatePathArr: $chosenCatePathArr, showCateQuotes: $showCateQuotesScr)
                     }
                 }
                 
@@ -49,6 +49,7 @@ struct CategoryScreen: View {
                 } label: {
                     ThemeBtnView(context: "Show \(chosenCatePathArr.count) categories")
                         .fontWeight(.medium)
+                        .padding(.top, -8)
                 }
             }
             .navigationTitle("Category")
@@ -56,11 +57,16 @@ struct CategoryScreen: View {
             .onAppear {
                 setFictionPicked()
             }
-            .onChange(of: chosenCatePathArr) { _ in
+            .onChange(of: scenePhase) {
+                if scenePhase == .background {
+                    showCate = false
+                }
+            }
+            .onChange(of: chosenCatePathArr) {
                 isChanged = true
             }
             .fullScreenCover(isPresented: $showCateQuotesScr) {
-                CateQuotesScreen(showCateQuotesScr: $showCateQuotesScr, chosenCatePathArr: $chosenCatePathArr, removeCateForYou: $removeCateForYou, addCateForYou: $addCateForYou)
+                CateQuotesScreen(showCateQuotesScr: $showCateQuotesScr, chosenCatePathArr: $chosenCatePathArr)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -77,7 +83,16 @@ struct CategoryScreen: View {
                             .imageScale(.large)
                             .fontWeight(.semibold)
                     }
-
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(
+                        destination: CateAdjustScreen(showCate: $showCate, chosenCatePathArr: $chosenCatePathArr, refetch: $refetch, fictionPicked: $fictionPicked)
+                    ) {
+                        Image(systemName: "slider.horizontal.3")
+                            .imageScale(.large)
+                            .fontWeight(.semibold)
+                    }
                 }
             }
         } //nav
@@ -118,11 +133,10 @@ struct CategoryScreen: View {
 struct YourCateHScrollV: View {
     
     @Binding var chosenCatePathArr: [String]
-    @Binding var removeCateForYou: String
     @Binding var showCateQuotes: Bool
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 16) {
             HStack {
                 Text("Your categories (\(chosenCatePathArr.count))")
                     .font(.title3)
@@ -132,15 +146,17 @@ struct YourCateHScrollV: View {
             }
             
             ScrollView(.horizontal) {
-                LazyHGrid(rows: [GridItem(.flexible())], spacing: 12) {
+                LazyHGrid(rows: [GridItem(.flexible())], spacing: 10) {
                     ForEach(chosenCatePathArr, id: \.self) { cateP in
-                        CateCellForYou(removeCateForYou: $removeCateForYou, chosenCatePathArr: $chosenCatePathArr, cateP: cateP, showCateQuotes: $showCateQuotes)
+                        CateCellForYou(chosenCatePathArr: $chosenCatePathArr, cateP: cateP, showCateQuotes: $showCateQuotes)
+                            .transition(.scale)
+                            .sensoryFeedback(.decrease, trigger: chosenCatePathArr)
                     }
                 }
                 .padding(.horizontal)
             }
             .scrollIndicators(.hidden)
-            .frame(height: 102)
+            .frame(height: 96)
         }
     }
 }
@@ -149,6 +165,8 @@ struct YourCateHScrollV: View {
 
 struct FictionSection: View {
     
+    @Environment(\.colorScheme) var mode
+
     @Binding var fictionPicked: FictionOption
     @Binding var isChanged: Bool
     
@@ -178,11 +196,14 @@ struct FictionSection: View {
                 .foregroundStyle(Color(.systemGray4))
                 .shadow(color: .black.opacity(0.4), radius: 2)
         }
+        .background(mode == .light ? Color.white : Color.gray.opacity(0.2))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
 struct FictionRow: View {
     
+    @Environment(\.colorScheme) var mode
     @AppStorage(currentUserDefaults.userID) var userID: String?
     var fictionOption: FictionOption
     
@@ -199,25 +220,34 @@ struct FictionRow: View {
         } label: {
             HStack {
                 Text(fictionOption.name)
-                    .font(.headline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(isPicked() ? .gray : .black)
+                    .font(.subheadline)
+                    .fontWeight(.regular)
+                    .foregroundStyle(configForegroundC())
                 Spacer()
                 
                 Image(systemName: "checkmark")
                     .resizable()
-                    .frame(width: 10, height: 10)
-                    .fontWeight(.medium)
-                    .foregroundStyle(isPicked() ? .black : .clear)
+                    .frame(width: 8, height: 8)
+                    .fontWeight(.bold)
+                    .foregroundStyle(isPicked() ? .white : .clear)
                     .padding(.all, 8)
-                    .background(isPicked() ? .yellow : .clear)
+                    .background(isPicked() ? .color3 : .clear)
                     .clipShape(.circle)
             }
             .padding(.horizontal)
         }
+        .sensoryFeedback(.selection, trigger: fictionPicked)
     }
     
     //MARK: - Function
+    
+    private func configForegroundC() -> Color {
+        if mode == .light {
+            return isPicked() ? .gray : .black
+        } else {
+            return isPicked() ? .gray : .white
+        }
+    }
     
     private func isPicked() -> Bool {
         return fictionPicked == fictionOption

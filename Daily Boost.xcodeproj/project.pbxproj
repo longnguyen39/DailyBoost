@@ -10,13 +10,17 @@
 		3A1330C22CD8B0A600651237 /* ThemeHScrollV_24.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1330C12CD8B0A600651237 /* ThemeHScrollV_24.swift */; };
 		3A16F7E82C0650190057C123 /* Array+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A16F7E72C0650190057C123 /* Array+Ext.swift */; };
 		3A22178F2CA388AF007054AF /* HomeScreenVM_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A22178E2CA388AF007054AF /* HomeScreenVM_1.swift */; };
+		3A278E2E2D5097C800FFB5E2 /* WidgetInstructScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A278E2D2D5097C800FFB5E2 /* WidgetInstructScreen.swift */; };
+		3A278E302D50A93E00FFB5E2 /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A278E2F2D50A93E00FFB5E2 /* Color+Ext.swift */; };
+		3A2AE0152D58942F004362A4 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2AE0142D58942E004362A4 /* NotificationManager.swift */; };
+		3A2AE02D2D5A0677004362A4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A2AE02C2D5A0677004362A4 /* Launch Screen.storyboard */; };
 		3A3B27FA2D2C57F900448FA5 /* ThemeManager_22.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3B27F92D2C57F900448FA5 /* ThemeManager_22.swift */; };
 		3A42F1732C79B419002EE7FE /* Universal_func.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A42F1722C79B419002EE7FE /* Universal_func.swift */; };
 		3A4665102D3E12D900416ECA /* ReminderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A46650F2D3E12D900416ECA /* ReminderScreen.swift */; };
 		3A4665152D3EFDCB00416ECA /* LikeQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4665142D3EFDCB00416ECA /* LikeQuote.swift */; };
 		3A4665252D3F7B4F00416ECA /* LikeQuoteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4665242D3F7B4F00416ECA /* LikeQuoteScreen.swift */; };
 		3A4665272D3F7F8000416ECA /* CaptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4665262D3F7F8000416ECA /* CaptionView.swift */; };
-		3A46C2FA2C82D80A00CA824D /* UploadScreen_16.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A46C2F92C82D80A00CA824D /* UploadScreen_16.swift */; };
+		3A46C2FA2C82D80A00CA824D /* UploadScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A46C2F92C82D80A00CA824D /* UploadScreen.swift */; };
 		3A4779A92C93C84600D68F6B /* CateQuotesScreen_18.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4779A82C93C84600D68F6B /* CateQuotesScreen_18.swift */; };
 		3A4D35292C765CF300DC44C8 /* ServiceUpload_15.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D35282C765CF300DC44C8 /* ServiceUpload_15.swift */; };
 		3A4D352B2C76AB0200DC44C8 /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D352A2C76AB0200DC44C8 /* String+Ext.swift */; };
@@ -33,7 +37,6 @@
 		3A83D3A52CDCC2A000FA0866 /* View+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A83D3A42CDCC2A000FA0866 /* View+Ext.swift */; };
 		3A9513422CDB151600DA0EFC /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9513412CDB151600DA0EFC /* Theme.swift */; };
 		3A9521532D3CDE890055EAFA /* Date+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9521522D3CDE890055EAFA /* Date+Ext.swift */; };
-		3A9521552D3D01350055EAFA /* ProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9521542D3D01350055EAFA /* ProfileScreen.swift */; };
 		3A9B49172D34F5EE00C97FF4 /* EmailScreen_25.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9B49162D34F5EE00C97FF4 /* EmailScreen_25.swift */; };
 		3A9B49192D34FD1700C97FF4 /* LoginScreen_26.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9B49182D34FD1700C97FF4 /* LoginScreen_26.swift */; };
 		3A9B491D2D35232A00C97FF4 /* ThemeBtnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9B491C2D35232A00C97FF4 /* ThemeBtnView.swift */; };
@@ -75,6 +78,8 @@
 		3ADE821F2C751719003CB135 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADE821E2C751719003CB135 /* LoadingView.swift */; };
 		3AE349D42C71E5580010D4D9 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE349D32C71E5580010D4D9 /* User.swift */; };
 		3AE349D62C71EC040010D4D9 /* AuthService_13.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE349D52C71EC040010D4D9 /* AuthService_13.swift */; };
+		3AE488A02D55DE660044350A /* CateAdjustScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE4889F2D55DE660044350A /* CateAdjustScreen.swift */; };
+		3AE488A22D55E1FB0044350A /* ProfileScreen_27.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE488A12D55E1FB0044350A /* ProfileScreen_27.swift */; };
 		3AEC2B822C005B1D00381A8B /* SettingScreen_6.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AEC2B812C005B1D00381A8B /* SettingScreen_6.swift */; };
 		3AF788D92D3A3923001BB1A4 /* ForgotPassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF788D82D3A3923001BB1A4 /* ForgotPassView.swift */; };
 		3AFB20052CDABA9E006E51E9 /* ThemeWallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFB20042CDABA9E006E51E9 /* ThemeWallpaper.swift */; };
@@ -101,13 +106,18 @@
 		3A1330C12CD8B0A600651237 /* ThemeHScrollV_24.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeHScrollV_24.swift; sourceTree = "<group>"; };
 		3A16F7E72C0650190057C123 /* Array+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Ext.swift"; sourceTree = "<group>"; };
 		3A22178E2CA388AF007054AF /* HomeScreenVM_1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenVM_1.swift; sourceTree = "<group>"; };
+		3A278E2D2D5097C800FFB5E2 /* WidgetInstructScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetInstructScreen.swift; sourceTree = "<group>"; };
+		3A278E2F2D50A93E00FFB5E2 /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
+		3A2AE0142D58942E004362A4 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		3A2AE02C2D5A0677004362A4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		3A2AE02E2D5A1D63004362A4 /* Daily-Boost-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Daily-Boost-Info.plist"; sourceTree = SOURCE_ROOT; };
 		3A3B27F92D2C57F900448FA5 /* ThemeManager_22.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager_22.swift; sourceTree = "<group>"; };
 		3A42F1722C79B419002EE7FE /* Universal_func.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Universal_func.swift; sourceTree = "<group>"; };
 		3A46650F2D3E12D900416ECA /* ReminderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScreen.swift; sourceTree = "<group>"; };
 		3A4665142D3EFDCB00416ECA /* LikeQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeQuote.swift; sourceTree = "<group>"; };
 		3A4665242D3F7B4F00416ECA /* LikeQuoteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeQuoteScreen.swift; sourceTree = "<group>"; };
 		3A4665262D3F7F8000416ECA /* CaptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionView.swift; sourceTree = "<group>"; };
-		3A46C2F92C82D80A00CA824D /* UploadScreen_16.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadScreen_16.swift; sourceTree = "<group>"; };
+		3A46C2F92C82D80A00CA824D /* UploadScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadScreen.swift; sourceTree = "<group>"; };
 		3A4779A82C93C84600D68F6B /* CateQuotesScreen_18.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CateQuotesScreen_18.swift; sourceTree = "<group>"; };
 		3A4D35282C765CF300DC44C8 /* ServiceUpload_15.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceUpload_15.swift; sourceTree = "<group>"; };
 		3A4D352A2C76AB0200DC44C8 /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
@@ -124,7 +134,6 @@
 		3A83D3A42CDCC2A000FA0866 /* View+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Ext.swift"; sourceTree = "<group>"; };
 		3A9513412CDB151600DA0EFC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		3A9521522D3CDE890055EAFA /* Date+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Ext.swift"; sourceTree = "<group>"; };
-		3A9521542D3D01350055EAFA /* ProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScreen.swift; sourceTree = "<group>"; };
 		3A9B49162D34F5EE00C97FF4 /* EmailScreen_25.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailScreen_25.swift; sourceTree = "<group>"; };
 		3A9B49182D34FD1700C97FF4 /* LoginScreen_26.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreen_26.swift; sourceTree = "<group>"; };
 		3A9B491C2D35232A00C97FF4 /* ThemeBtnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeBtnView.swift; sourceTree = "<group>"; };
@@ -162,6 +171,8 @@
 		3ADE821E2C751719003CB135 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		3AE349D32C71E5580010D4D9 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		3AE349D52C71EC040010D4D9 /* AuthService_13.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService_13.swift; sourceTree = "<group>"; };
+		3AE4889F2D55DE660044350A /* CateAdjustScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CateAdjustScreen.swift; sourceTree = "<group>"; };
+		3AE488A12D55E1FB0044350A /* ProfileScreen_27.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScreen_27.swift; sourceTree = "<group>"; };
 		3AEC2B812C005B1D00381A8B /* SettingScreen_6.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingScreen_6.swift; sourceTree = "<group>"; };
 		3AF788D82D3A3923001BB1A4 /* ForgotPassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassView.swift; sourceTree = "<group>"; };
 		3AFB20042CDABA9E006E51E9 /* ThemeWallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeWallpaper.swift; sourceTree = "<group>"; };
@@ -225,6 +236,7 @@
 				3A83707D2C883B220035F294 /* ExtractTitleAndCate.swift */,
 				3A83D3A42CDCC2A000FA0866 /* View+Ext.swift */,
 				3A9521522D3CDE890055EAFA /* Date+Ext.swift */,
+				3A278E2F2D50A93E00FFB5E2 /* Color+Ext.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -241,6 +253,7 @@
 		3A522B922C60A38D00B98D24 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				3A4665262D3F7F8000416ECA /* CaptionView.swift */,
 				3A522B8E2C60A1ED00B98D24 /* ThemeImgView.swift */,
 				3A522B932C60A3C900B98D24 /* ContBtnView.swift */,
 				3A9B491C2D35232A00C97FF4 /* ThemeBtnView.swift */,
@@ -274,7 +287,6 @@
 			isa = PBXGroup;
 			children = (
 				3AE349D52C71EC040010D4D9 /* AuthService_13.swift */,
-				3A522B922C60A38D00B98D24 /* View */,
 				3A4665112D3E362600416ECA /* Login */,
 				3AC8051F2C2E2C3200D2410F /* PurposeScreen_10.swift */,
 				3AC8051D2C2E2A0F00D2410F /* TimeScreen_11.swift */,
@@ -288,12 +300,12 @@
 		3AC8051A2C2E258D00D2410F /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				3A4665262D3F7F8000416ECA /* CaptionView.swift */,
+				3A522B922C60A38D00B98D24 /* View */,
 				3AC805192C2E256C00D2410F /* Onboarding */,
 				3AEC2B832C005B2800381A8B /* Home */,
 				3AEC2B842C005B3D00381A8B /* Category */,
-				3AEC2B852C005B4A00381A8B /* Setting */,
 				3ACE099E2C03C62800DB9ED6 /* Theme */,
+				3AEC2B852C005B4A00381A8B /* Setting */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -322,9 +334,10 @@
 		3ACB03D82BFEA9C6002584A9 /* Daily Boost */ = {
 			isa = PBXGroup;
 			children = (
+				3A2AE02E2D5A1D63004362A4 /* Daily-Boost-Info.plist */,
 				3ACB03D92BFEA9C6002584A9 /* Daily_BoostApp.swift */,
 				3AC805212C2E2DCE00D2410F /* MainScreen.swift */,
-				3A46C2F92C82D80A00CA824D /* UploadScreen_16.swift */,
+				3A46C2F92C82D80A00CA824D /* UploadScreen.swift */,
 				3A08CCA62C059570000431FF /* Admin Upload */,
 				3ACE09B62C04080700DB9ED6 /* ServiceManager */,
 				3A9C01CB2C01C40D009F23EC /* Enums */,
@@ -335,6 +348,7 @@
 				3A42F1722C79B419002EE7FE /* Universal_func.swift */,
 				3ADE821E2C751719003CB135 /* LoadingView.swift */,
 				3ACB03DD2BFEA9C8002584A9 /* Assets.xcassets */,
+				3A2AE02C2D5A0677004362A4 /* Launch Screen.storyboard */,
 				3ACE09A32C0404B300DB9ED6 /* GoogleService-Info.plist */,
 				3ACB03DF2BFEA9C8002584A9 /* Preview Content */,
 			);
@@ -382,6 +396,7 @@
 			children = (
 				3ACE09B72C04082600DB9ED6 /* ServiceFetch_14.swift */,
 				3A4D35282C765CF300DC44C8 /* ServiceUpload_15.swift */,
+				3A2AE0142D58942E004362A4 /* NotificationManager.swift */,
 			);
 			path = ServiceManager;
 			sourceTree = "<group>";
@@ -416,6 +431,7 @@
 			isa = PBXGroup;
 			children = (
 				3AC128E02BFFBFEA0089893E /* CategoryScreen_4.swift */,
+				3AE4889F2D55DE660044350A /* CateAdjustScreen.swift */,
 				3A4779A82C93C84600D68F6B /* CateQuotesScreen_18.swift */,
 				3A5212752CA36F3300D2DE56 /* Cells */,
 			);
@@ -426,7 +442,8 @@
 			isa = PBXGroup;
 			children = (
 				3AEC2B812C005B1D00381A8B /* SettingScreen_6.swift */,
-				3A9521542D3D01350055EAFA /* ProfileScreen.swift */,
+				3A278E2D2D5097C800FFB5E2 /* WidgetInstructScreen.swift */,
+				3AE488A12D55E1FB0044350A /* ProfileScreen_27.swift */,
 				3A46650F2D3E12D900416ECA /* ReminderScreen.swift */,
 				3A4665242D3F7B4F00416ECA /* LikeQuoteScreen.swift */,
 			);
@@ -556,6 +573,7 @@
 			files = (
 				3ACB03E12BFEA9C8002584A9 /* Preview Assets.xcassets in Resources */,
 				3ACB03DE2BFEA9C8002584A9 /* Assets.xcassets in Resources */,
+				3A2AE02D2D5A0677004362A4 /* Launch Screen.storyboard in Resources */,
 				3ACE09A42C0404B300DB9ED6 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -585,7 +603,6 @@
 				3A9C01D32C01E574009F23EC /* Cate4_Prod.swift in Sources */,
 				3A1330C22CD8B0A600651237 /* ThemeHScrollV_24.swift in Sources */,
 				3A7CF53C2D30530500A23C4E /* FictionOption.swift in Sources */,
-				3A9521552D3D01350055EAFA /* ProfileScreen.swift in Sources */,
 				3A3B27FA2D2C57F900448FA5 /* ThemeManager_22.swift in Sources */,
 				3A522B962C60A9AD00B98D24 /* Notes.swift in Sources */,
 				3A9C01D12C01E55D009F23EC /* Cate7_Calm.swift in Sources */,
@@ -598,6 +615,7 @@
 				3ACB03DA2BFEA9C6002584A9 /* Daily_BoostApp.swift in Sources */,
 				3A9B49192D34FD1700C97FF4 /* LoginScreen_26.swift in Sources */,
 				3A16F7E82C0650190057C123 /* Array+Ext.swift in Sources */,
+				3A278E302D50A93E00FFB5E2 /* Color+Ext.swift in Sources */,
 				3AF788D92D3A3923001BB1A4 /* ForgotPassView.swift in Sources */,
 				3AFB20052CDABA9E006E51E9 /* ThemeWallpaper.swift in Sources */,
 				3AC128DD2BFFB8EC0089893E /* FeedCellScr_2.swift in Sources */,
@@ -606,10 +624,12 @@
 				3AC805202C2E2C3200D2410F /* PurposeScreen_10.swift in Sources */,
 				3A82E8D52CD9F80800C61383 /* ThemeCell.swift in Sources */,
 				3A9C01D72C01E59B009F23EC /* Cate6_Sport.swift in Sources */,
+				3A2AE0152D58942F004362A4 /* NotificationManager.swift in Sources */,
 				3A4665272D3F7F8000416ECA /* CaptionView.swift in Sources */,
 				3AC8051E2C2E2A0F00D2410F /* TimeScreen_11.swift in Sources */,
 				3A83D3A52CDCC2A000FA0866 /* View+Ext.swift in Sources */,
 				3A9C01CF2C01C5E4009F23EC /* Cate2_Hard.swift in Sources */,
+				3AE488A22D55E1FB0044350A /* ProfileScreen_27.swift in Sources */,
 				3A9C01C72C010B4C009F23EC /* Quote.swift in Sources */,
 				3ACE09B82C04082600DB9ED6 /* ServiceFetch_14.swift in Sources */,
 				3AE349D42C71E5580010D4D9 /* User.swift in Sources */,
@@ -618,12 +638,13 @@
 				3AC128E12BFFBFEA0089893E /* CategoryScreen_4.swift in Sources */,
 				3A9C01CA2C0116E0009F23EC /* CateTitle.swift in Sources */,
 				3A4665252D3F7B4F00416ECA /* LikeQuoteScreen.swift in Sources */,
-				3A46C2FA2C82D80A00CA824D /* UploadScreen_16.swift in Sources */,
+				3A46C2FA2C82D80A00CA824D /* UploadScreen.swift in Sources */,
 				3A4D352B2C76AB0200DC44C8 /* String+Ext.swift in Sources */,
 				3A9C01D92C01E5AC009F23EC /* Cate1_LoveSelf.swift in Sources */,
 				3A9521532D3CDE890055EAFA /* Date+Ext.swift in Sources */,
 				3ACE09BF2C0491A000DB9ED6 /* CONSTANTS.swift in Sources */,
 				3A522B942C60A3C900B98D24 /* ContBtnView.swift in Sources */,
+				3AE488A02D55DE660044350A /* CateAdjustScreen.swift in Sources */,
 				3A9513422CDB151600DA0EFC /* Theme.swift in Sources */,
 				3A9C01DB2C01E5BD009F23EC /* Cate8_Zodiac.swift in Sources */,
 				3A22178F2CA388AF007054AF /* HomeScreenVM_1.swift in Sources */,
@@ -637,6 +658,7 @@
 				3A4665152D3EFDCB00416ECA /* LikeQuote.swift in Sources */,
 				3A9B49172D34F5EE00C97FF4 /* EmailScreen_25.swift in Sources */,
 				3A4D35292C765CF300DC44C8 /* ServiceUpload_15.swift in Sources */,
+				3A278E2E2D5097C800FFB5E2 /* WidgetInstructScreen.swift in Sources */,
 				3A78D6DE2C656D5800017985 /* PaywallScreen_12.swift in Sources */,
 				3A78D6DC2C656D4800017985 /* WidgetScreen_9.swift in Sources */,
 			);
@@ -799,19 +821,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Daily Boost/Preview Content\"";
 				DEVELOPMENT_TEAM = 7Q54M9F3YT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Daily Boost";
+				INFOPLIST_FILE = "Daily-Boost-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -830,19 +854,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Daily Boost/Preview Content\"";
 				DEVELOPMENT_TEAM = 7Q54M9F3YT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Daily Boost";
+				INFOPLIST_FILE = "Daily-Boost-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
