@@ -8,106 +8,101 @@
 import SwiftUI
 
 struct CateQuotesScreen: View {
-    @AppStorage(CATEPATH_CATEQUOTES) var catePath: String?
-//    @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
-        
-    @Binding var showCateQuotesScr: Bool
+    
+    @Environment(\.colorScheme) var mode
+
+    @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
+    var catePath: String?
+
+    @Binding var user: User
+    @Binding var showCateQuotes: Bool
     @Binding var chosenCatePathArr: [String]
     
-    @State var quoteArr: [Quote] = []
+    @State var displayQArr: [Quote] = []
     @State var histIntArr: [Int] = []
     @State var themeUIImage: UIImage = UIImage(named: "loading")!
         
     var body: some View {
-        ZStack {
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(quoteArr, id: \.self) { quote in
-                        FeedCellScr(quote: quote, showInfo: .constant(false), showCateOnTop: .constant(false))
-                            .frame(width: UIScreen.width, height: UIScreen.height)
-                            .onAppear {
-                                Task {
-                                    await cellAppear(quote: quote)
-                                }
-                            } //cell appear after each swipe
+        NavigationView {
+            ZStack {
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(displayQArr, id: \.self) { quote in
+                            FeedCellScr(user: $user, quote: quote)
+                                .frame(width: UIScreen.width, height: UIScreen.height)
+                                .onAppear {
+                                    Task {
+                                        await cellAppear(quote: quote)
+                                    }
+                                } //cell appear after each swipe
+                        }
+                    }
+                    .scrollTargetLayout()
+                }
+                .scrollTargetBehavior(.paging)
+                .scrollIndicators(.hidden)
+                .onAppear {
+                    Task {
+                        await appendANewQ()
+                        UserDefaults.standard.set(displayQArr[displayQArr.count-1].script, forKey: UserDe.quote_last)
                     }
                 }
-                .scrollTargetLayout()
+                .ignoresSafeArea()
             }
-            .scrollTargetBehavior(.paging)
-            .scrollIndicators(.hidden)
+//            .navigationTitle(catePath?.getCate() ?? "")
+            .navigationBarTitleDisplayMode(.inline)
+            .background { //this is the best background setup
+                Image(uiImage: themeUIImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: UIScreen.width, height: UIScreen.height)
+                    .ignoresSafeArea()
+            }
             .onAppear {
-                Task {
-                    await appendANewQ()
-                    UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.quote_last)
-                }
+                themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
             }
-            .ignoresSafeArea()
-            
-            
-            VStack {
-                
-                HStack {
-                    Text(catePath?.getCate() ?? "Error")
-                        .font(.footnote)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.black)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal)
-                        .background(.gray)
-                        .clipShape(.capsule)
-                    
-                    Spacer()
-                    
+            .toolbar {
+                ToolbarItem(placement: .destructiveAction) {
                     Button {
-                        showCateQuotesScr.toggle()
+                        showCateQuotes.toggle()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .imageScale(.large)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.gray)
-                            .background(.black)
-                            .clipShape(.circle)
+                            .foregroundStyle(mode == .light ?  .black : .white)
                     }
                 }
-                .padding(.horizontal)
                 
-                Spacer()
-                
-                Button {
-                    followFunc()
-                } label: {
-                    HStack {
-                        Text(isFollowing() ? "Following" : " Follow ")
-                            .font(.headline)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.black)
-                        
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        followFunc()
+                    } label: {
                         if isFollowing() {
-                            Image(systemName: "checkmark.circle.fill")
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.yellow)
-                                .background(.black)
-                                .clipShape(.circle)
+                            Text("Following")
+                                .font(.caption)
+                                .fontWeight(.regular)
+                                .foregroundStyle(mode == .light ? .black : .white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(lineWidth: 1)
+                                        .foregroundStyle(mode == .light ? .black : .white)
+                                }
+                        } else {
+                            Text("Follow")
+                                .font(.caption)
+                                .fontWeight(.regular)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(
+                                    LinearGradient(gradient: Gradient(colors: [.c1, .c2, .c3, .c4, .c5]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 12)
-                    .background(isFollowing() ? .gray : .yellow)
-                    .clipShape(.capsule)
-                    .padding(.bottom)
                 }
             }
-        }
-        .background { //this is the best background setup
-            Image(uiImage: themeUIImage)
-                .resizable()
-                .scaledToFill()
-                .frame(width: UIScreen.width, height: UIScreen.height)
-                .ignoresSafeArea()
-        }
-        .onAppear {
-            themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
         }
         
     }
@@ -126,7 +121,7 @@ struct CateQuotesScreen: View {
             if quote.script == last {
                 print("DEBUG_18: last quote")
                 await appendANewQ()
-                UserDefaults.standard.set(quoteArr[quoteArr.count-1].script, forKey: UserDe.quote_last)
+                UserDefaults.standard.set(displayQArr[displayQArr.count-1].script, forKey: UserDe.quote_last)
             }
             
         } else { // when user swipe up (rewatch quotes)
@@ -148,10 +143,10 @@ struct CateQuotesScreen: View {
                 newQ = await ServiceFetch.shared.fetchAQuote(title: cateP.getTitle(), cate: cateP.getCate(), orderNo: randInt)
                 inHist = existInHist(orderNo: randInt)
             }
-            quoteArr.append(newQ)
-            print("DEBUG_18: quoteArr count is \(quoteArr.count)")
+            displayQArr.append(newQ)
+            print("DEBUG_18: quoteArr count is \(displayQArr.count)")
         } else {
-            print("DEBUG_18: Already fetch all quotes of \(quoteArr[0].category)")
+            print("DEBUG_18: Already fetch all quotes of \(displayQArr[0].category)")
         }
         
     }
@@ -190,5 +185,5 @@ struct CateQuotesScreen: View {
 }
 
 #Preview {
-    CateQuotesScreen(showCateQuotesScr: .constant(false), chosenCatePathArr: .constant(["haha"]))
+    CateQuotesScreen(user: .constant(User.mockData), showCateQuotes: .constant(false), chosenCatePathArr: .constant(["haha"]))
 }

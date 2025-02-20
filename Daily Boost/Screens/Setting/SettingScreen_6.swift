@@ -8,24 +8,20 @@
 import SwiftUI
 
 struct SettingScreen: View {
-    
-    //only for ReminderScr
-    var chosenCatePArr: [String]
-    
+        
     @Binding var user: User
     @Binding var showSetting: Bool
-    @Binding var showCateTopLeft: Bool
-        
+    
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 8) {
-                    ToggleSection(showCateTopLeft: $showCateTopLeft)
-                        .padding(.top)
+                    StreakSection()
+                        .padding(.top, 12)
                     
                     SubscriptionSection(user: $user)
                     
-                    AccountSection(user: $user, chosenCatePArr: chosenCatePArr)
+                    AccountSection(user: $user)
                     
 //                    SupportSection(user: $user) //later ver
                 }
@@ -50,7 +46,7 @@ struct SettingScreen: View {
 }
 
 #Preview {
-    SettingScreen(chosenCatePArr: [], user: .constant(User.initState), showSetting: .constant(true), showCateTopLeft: .constant(true))
+    SettingScreen(user: .constant(User.initState), showSetting: .constant(true))
 }
 
 //MARK: ---------------------------------------------
@@ -87,43 +83,44 @@ struct SettingRow: View {
 
 //MARK: ------------------------------------------------
 
-struct ToggleSection: View {
+struct StreakSection: View {
     
     @Environment(\.colorScheme) var mode
-    @Binding var showCateTopLeft: Bool
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("*Display the quote category on top left corner")
-                    .font(.caption)
-                    .fontWeight(.regular)
-                    .foregroundStyle(.gray)
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.top, 12)
-            
-            Toggle("Show Category", isOn: $showCateTopLeft)
-                .tint(.color3)
+        HStack {
+            Text("Streak")
+                .font(.title3)
                 .fontWeight(.medium)
-                .padding(.horizontal)
-                .padding(.bottom)
+                .foregroundStyle(.gray)
+            Spacer()
         }
+        .padding(.horizontal)
+        
+        VStack {
+            Text(streakTextMessage())
+                .font(.subheadline)
+                .fontWeight(.regular)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(mode == .light ? .black : .white)
+                .padding(.horizontal)
+                .padding(.bottom, 4)
+            
+            StreakBar()
+        }
+        .padding()
+        .background(mode == .light ? Color.white : DARK_GRAY)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay {
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 12)
                 .stroke(lineWidth: 0.5)
                 .foregroundStyle(Color(.systemGray4))
                 .shadow(color: .black.opacity(0.4), radius: 2)
         }
-        .background(mode == .light ? Color.white : DARK_GRAY)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
         .padding(.horizontal)
-        .onChange(of: showCateTopLeft) {
-            UserDefaults.standard.set(showCateTopLeft, forKey: UserDe.show_top_left)
-        }
-        .sensoryFeedback(.selection, trigger: showCateTopLeft)
+        .padding(.top, -12)
     }
+    
 }
 
 //MARK: ------------------------------------------------
@@ -174,7 +171,6 @@ struct AccountSection: View {
     @Environment(\.colorScheme) var mode
     
     @Binding var user: User
-    var chosenCatePArr: [String]
         
     var body: some View {
         HStack {
@@ -210,9 +206,19 @@ struct AccountSection: View {
                 .padding(.top, -10)
             
             NavigationLink {
-                ReminderScreen(user: $user, chosenCatePArr: chosenCatePArr)
+                ReminderScreen(user: $user)
             } label: {
                 SettingRow(imgName: "bell", context: "Reminder")
+            }
+            
+            Divider()
+                .padding(.horizontal)
+                .padding(.top, -10)
+            
+            NavigationLink {
+                CateToggleScreen()
+            } label: {
+                SettingRow(imgName: "iphone.rear.camera", context: "Show Category")
             }
             
             //Widget for later version

@@ -11,6 +11,7 @@ enum Cate1_LoveSelf: CaseIterable {
     case motivation
     case badassMotiv
     case mindfulness
+    case affirmations
     case selfLove
     case confidence
     case ego
@@ -32,6 +33,8 @@ enum Cate1_LoveSelf: CaseIterable {
             return "Badass quotes"
         case .mindfulness:
             return "Mindfulness"
+        case .affirmations:
+            return "Affirmations"
         case .selfLove:
             return "Self-love"
         case .confidence:

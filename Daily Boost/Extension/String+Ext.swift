@@ -36,9 +36,16 @@ extension String {
         let index = self.index(self.startIndex, offsetBy: pos+1) //to avoid the '/'
         return String(self[index...]).replacingOccurrences(of: "#\(orderNo)", with: "")
     }
-
-//MARK: Uploading quotes
     
+    func getUsername() -> String {
+        if self.contains(where: { $0 == "@" }) == false {
+            return "username"
+        } else {
+            let pos = findCharPos(needle: "@", str: self)
+            let index = self.index(self.startIndex, offsetBy: pos)
+            return String(self[..<index])
+        }
+    }
     
     
     

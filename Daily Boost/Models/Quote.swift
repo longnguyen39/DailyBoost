@@ -27,8 +27,7 @@ struct Quote: Codable, Hashable { //Hashable when used in ForEach
     static var purposeStrArr: [String] = [
         "\(CateTitle.one.title)/\(Cate1_LoveSelf.motivation.name)",
         "\(CateTitle.one.title)/\(Cate1_LoveSelf.positivity.name)",
-        "\(CateTitle.one.title)/\(Cate1_LoveSelf.women.name)",
-        "\(CateTitle.one.title)/\(Cate1_LoveSelf.men.name)",
+        "\(CateTitle.one.title)/\(Cate1_LoveSelf.affirmations.name)",
         
         "\(CateTitle.two.title)/\(Cate2_Hard.overFear.name)",
         "\(CateTitle.two.title)/\(Cate2_Hard.loneliness.name)",

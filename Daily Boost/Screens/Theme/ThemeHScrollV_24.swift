@@ -65,7 +65,7 @@ struct ThemeHScrollV: View {
             print("DEBUG_24: fetching themeArr \(title)")
             fullThemeArr = try await         ServiceFetch.shared.fetchThemesFromATitle(themeTitle: title).shuffled()
             
-            //default theme is always the first one
+            //most pop theme is always the first one
             if title == ThemeWallpaper.mostPopular.name {
                 fullThemeArr.insert(Theme.defaultTheme, at: 0)
             }

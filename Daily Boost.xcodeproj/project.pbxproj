@@ -7,13 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A014CCD2D62061C0044D9F7 /* NotiReportScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A014CCC2D62061C0044D9F7 /* NotiReportScreen.swift */; };
 		3A1330C22CD8B0A600651237 /* ThemeHScrollV_24.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1330C12CD8B0A600651237 /* ThemeHScrollV_24.swift */; };
 		3A16F7E82C0650190057C123 /* Array+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A16F7E72C0650190057C123 /* Array+Ext.swift */; };
+		3A1723222D5CB568000C4829 /* Cate0_MostPop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1723212D5CB568000C4829 /* Cate0_MostPop.swift */; };
 		3A22178F2CA388AF007054AF /* HomeScreenVM_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A22178E2CA388AF007054AF /* HomeScreenVM_1.swift */; };
 		3A278E2E2D5097C800FFB5E2 /* WidgetInstructScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A278E2D2D5097C800FFB5E2 /* WidgetInstructScreen.swift */; };
 		3A278E302D50A93E00FFB5E2 /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A278E2F2D50A93E00FFB5E2 /* Color+Ext.swift */; };
 		3A2AE0152D58942F004362A4 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2AE0142D58942E004362A4 /* NotificationManager.swift */; };
 		3A2AE02D2D5A0677004362A4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A2AE02C2D5A0677004362A4 /* Launch Screen.storyboard */; };
+		3A2BF3A82D66EAFC00A8C145 /* CateToggleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2BF3A72D66EAFC00A8C145 /* CateToggleScreen.swift */; };
 		3A3B27FA2D2C57F900448FA5 /* ThemeManager_22.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3B27F92D2C57F900448FA5 /* ThemeManager_22.swift */; };
 		3A42F1732C79B419002EE7FE /* Universal_func.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A42F1722C79B419002EE7FE /* Universal_func.swift */; };
 		3A4665102D3E12D900416ECA /* ReminderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A46650F2D3E12D900416ECA /* ReminderScreen.swift */; };
@@ -31,6 +34,8 @@
 		3A78D6DC2C656D4800017985 /* WidgetScreen_9.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A78D6DB2C656D4800017985 /* WidgetScreen_9.swift */; };
 		3A78D6DE2C656D5800017985 /* PaywallScreen_12.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A78D6DD2C656D5800017985 /* PaywallScreen_12.swift */; };
 		3A7CF53C2D30530500A23C4E /* FictionOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7CF53B2D30530500A23C4E /* FictionOption.swift */; };
+		3A7F0EA52D66550C00187726 /* StreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7F0EA42D66550C00187726 /* StreakView.swift */; };
+		3A7F0EA72D665C1100187726 /* StreakBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7F0EA62D665C1100187726 /* StreakBar.swift */; };
 		3A82E8D52CD9F80800C61383 /* ThemeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A82E8D42CD9F80800C61383 /* ThemeCell.swift */; };
 		3A82E8D72CDA1B9A00C61383 /* AllThemeScreen_20.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A82E8D62CDA1B9A00C61383 /* AllThemeScreen_20.swift */; };
 		3A83707E2C883B220035F294 /* ExtractTitleAndCate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A83707D2C883B220035F294 /* ExtractTitleAndCate.swift */; };
@@ -103,14 +108,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3A014CCC2D62061C0044D9F7 /* NotiReportScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotiReportScreen.swift; sourceTree = "<group>"; };
 		3A1330C12CD8B0A600651237 /* ThemeHScrollV_24.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeHScrollV_24.swift; sourceTree = "<group>"; };
 		3A16F7E72C0650190057C123 /* Array+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Ext.swift"; sourceTree = "<group>"; };
+		3A1723212D5CB568000C4829 /* Cate0_MostPop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cate0_MostPop.swift; sourceTree = "<group>"; };
 		3A22178E2CA388AF007054AF /* HomeScreenVM_1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenVM_1.swift; sourceTree = "<group>"; };
 		3A278E2D2D5097C800FFB5E2 /* WidgetInstructScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetInstructScreen.swift; sourceTree = "<group>"; };
 		3A278E2F2D50A93E00FFB5E2 /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
 		3A2AE0142D58942E004362A4 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		3A2AE02C2D5A0677004362A4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		3A2AE02E2D5A1D63004362A4 /* Daily-Boost-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Daily-Boost-Info.plist"; sourceTree = SOURCE_ROOT; };
+		3A2BF3A72D66EAFC00A8C145 /* CateToggleScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CateToggleScreen.swift; sourceTree = "<group>"; };
 		3A3B27F92D2C57F900448FA5 /* ThemeManager_22.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager_22.swift; sourceTree = "<group>"; };
 		3A42F1722C79B419002EE7FE /* Universal_func.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Universal_func.swift; sourceTree = "<group>"; };
 		3A46650F2D3E12D900416ECA /* ReminderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScreen.swift; sourceTree = "<group>"; };
@@ -128,6 +136,8 @@
 		3A78D6DB2C656D4800017985 /* WidgetScreen_9.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetScreen_9.swift; sourceTree = "<group>"; };
 		3A78D6DD2C656D5800017985 /* PaywallScreen_12.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen_12.swift; sourceTree = "<group>"; };
 		3A7CF53B2D30530500A23C4E /* FictionOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FictionOption.swift; sourceTree = "<group>"; };
+		3A7F0EA42D66550C00187726 /* StreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakView.swift; sourceTree = "<group>"; };
+		3A7F0EA62D665C1100187726 /* StreakBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakBar.swift; sourceTree = "<group>"; };
 		3A82E8D42CD9F80800C61383 /* ThemeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCell.swift; sourceTree = "<group>"; };
 		3A82E8D62CDA1B9A00C61383 /* AllThemeScreen_20.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllThemeScreen_20.swift; sourceTree = "<group>"; };
 		3A83707D2C883B220035F294 /* ExtractTitleAndCate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractTitleAndCate.swift; sourceTree = "<group>"; };
@@ -257,6 +267,7 @@
 				3A522B8E2C60A1ED00B98D24 /* ThemeImgView.swift */,
 				3A522B932C60A3C900B98D24 /* ContBtnView.swift */,
 				3A9B491C2D35232A00C97FF4 /* ThemeBtnView.swift */,
+				3A7F0EA62D665C1100187726 /* StreakBar.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -404,6 +415,7 @@
 		3ACE09BB2C042F3A00DB9ED6 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				3A1723212D5CB568000C4829 /* Cate0_MostPop.swift */,
 				3A9C01D82C01E5AC009F23EC /* Cate1_LoveSelf.swift */,
 				3A9C01CE2C01C5E4009F23EC /* Cate2_Hard.swift */,
 				3A9C01CC2C01C5CA009F23EC /* Cate3_Mood.swift */,
@@ -420,8 +432,10 @@
 			isa = PBXGroup;
 			children = (
 				3ACB04032BFEA9EE002584A9 /* HomeScreen.swift */,
+				3A7F0EA42D66550C00187726 /* StreakView.swift */,
 				3A22178E2CA388AF007054AF /* HomeScreenVM_1.swift */,
 				3AC128DC2BFFB8EC0089893E /* FeedCellScr_2.swift */,
+				3A014CCC2D62061C0044D9F7 /* NotiReportScreen.swift */,
 				3AC128DE2BFFBD830089893E /* InfoScreen_3.swift */,
 			);
 			path = Home;
@@ -442,6 +456,7 @@
 			isa = PBXGroup;
 			children = (
 				3AEC2B812C005B1D00381A8B /* SettingScreen_6.swift */,
+				3A2BF3A72D66EAFC00A8C145 /* CateToggleScreen.swift */,
 				3A278E2D2D5097C800FFB5E2 /* WidgetInstructScreen.swift */,
 				3AE488A12D55E1FB0044350A /* ProfileScreen_27.swift */,
 				3A46650F2D3E12D900416ECA /* ReminderScreen.swift */,
@@ -620,6 +635,7 @@
 				3AFB20052CDABA9E006E51E9 /* ThemeWallpaper.swift in Sources */,
 				3AC128DD2BFFB8EC0089893E /* FeedCellScr_2.swift in Sources */,
 				3ADE821F2C751719003CB135 /* LoadingView.swift in Sources */,
+				3A7F0EA72D665C1100187726 /* StreakBar.swift in Sources */,
 				3ACB04042BFEA9EE002584A9 /* HomeScreen.swift in Sources */,
 				3AC805202C2E2C3200D2410F /* PurposeScreen_10.swift in Sources */,
 				3A82E8D52CD9F80800C61383 /* ThemeCell.swift in Sources */,
@@ -631,9 +647,11 @@
 				3A9C01CF2C01C5E4009F23EC /* Cate2_Hard.swift in Sources */,
 				3AE488A22D55E1FB0044350A /* ProfileScreen_27.swift in Sources */,
 				3A9C01C72C010B4C009F23EC /* Quote.swift in Sources */,
+				3A2BF3A82D66EAFC00A8C145 /* CateToggleScreen.swift in Sources */,
 				3ACE09B82C04082600DB9ED6 /* ServiceFetch_14.swift in Sources */,
 				3AE349D42C71E5580010D4D9 /* User.swift in Sources */,
 				3A82E8D72CDA1B9A00C61383 /* AllThemeScreen_20.swift in Sources */,
+				3A7F0EA52D66550C00187726 /* StreakView.swift in Sources */,
 				3AEC2B822C005B1D00381A8B /* SettingScreen_6.swift in Sources */,
 				3AC128E12BFFBFEA0089893E /* CategoryScreen_4.swift in Sources */,
 				3A9C01CA2C0116E0009F23EC /* CateTitle.swift in Sources */,
@@ -645,6 +663,7 @@
 				3ACE09BF2C0491A000DB9ED6 /* CONSTANTS.swift in Sources */,
 				3A522B942C60A3C900B98D24 /* ContBtnView.swift in Sources */,
 				3AE488A02D55DE660044350A /* CateAdjustScreen.swift in Sources */,
+				3A014CCD2D62061C0044D9F7 /* NotiReportScreen.swift in Sources */,
 				3A9513422CDB151600DA0EFC /* Theme.swift in Sources */,
 				3A9C01DB2C01E5BD009F23EC /* Cate8_Zodiac.swift in Sources */,
 				3A22178F2CA388AF007054AF /* HomeScreenVM_1.swift in Sources */,
@@ -661,6 +680,7 @@
 				3A278E2E2D5097C800FFB5E2 /* WidgetInstructScreen.swift in Sources */,
 				3A78D6DE2C656D5800017985 /* PaywallScreen_12.swift in Sources */,
 				3A78D6DC2C656D4800017985 /* WidgetScreen_9.swift in Sources */,
+				3A1723222D5CB568000C4829 /* Cate0_MostPop.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -834,6 +854,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -867,6 +888,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (

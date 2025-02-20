@@ -11,7 +11,6 @@ import WebKit
 struct InfoScreen: View {
     
     @Binding var showInfo: Bool
-    @Binding var quoteInfo: Quote
     
     var body: some View {
         VStack {
@@ -36,22 +35,27 @@ struct InfoScreen: View {
             
             WebView(urlStr: "https://www.google.com/search?q=\(authorStr())")
         }
+        .onAppear {
+            
+        }
+        
     }
     
     private func authorStr() -> String {
-        return quoteInfo.author.replacingOccurrences(of: " ", with: "+")
+        let auth = UserDefaults.standard.object(forKey: AUTHOR) as? String ?? ""
+        return auth.replacingOccurrences(of: " ", with: "+")
     }
 }
 
 #Preview {
-    InfoScreen(showInfo: .constant(true), quoteInfo: .constant(Quote.mockQuote))
+    InfoScreen(showInfo: .constant(true))
 }
 
 //MARK: ---------------------------------------------
 
 struct WebView: UIViewRepresentable{
     
-    var urlStr:String
+    var urlStr: String
     
     func makeUIView(context: Context) -> some UIView {
         guard let url = URL(string: urlStr) else {

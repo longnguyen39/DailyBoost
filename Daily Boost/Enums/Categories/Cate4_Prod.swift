@@ -13,6 +13,7 @@ enum Cate4_Prod: CaseIterable {
     case routine
     case entrepreneur
     case productivity
+    case procrastination
     case focus
     case work
     case college
@@ -33,6 +34,8 @@ enum Cate4_Prod: CaseIterable {
             return "Entrepreneur"
         case .productivity:
             return "Productivity"
+        case .procrastination:
+            return "Procrastination"
         case .focus:
             return "Focus"
         case .work:

@@ -10,24 +10,26 @@ import SwiftUI
 struct FeedCellScr: View {
     
     @AppStorage(UserDe.isDarkText) var isDarkText: Bool?
-    @AppStorage(currentUserDefaults.userID) var userID: String?
+    @AppStorage(UserDe.show_top_left) var showCateOnTop: Bool?
     
+    @Binding var user: User
     var quote: Quote
-    @Binding var showInfo: Bool
-    @Binding var showCateOnTop: Bool
     
+    @State var showInfo: Bool = false
     @State var isLiked: Bool = false
     @State var opaLike: CGFloat = 0
     
+    @State var showNoti: Bool = false
+    
     var body: some View {
         ZStack {
-            if showCateOnTop {
+            if showCateOnTop ?? true {
                 CateTopView(cate: quote.category)
             }
             
             VStack(alignment: .center) {
                 ZStack {
-                    Text(quote.script.isEmpty ? "Loading..." : quote.script)
+                    Text(quote.script.isEmpty ? "Loading..." : quote.script.replacingOccurrences(of: "USERNAME", with: user.username))
                         .font(.system(size: 28))
                         .fontWeight(.regular)
                         .foregroundStyle(isDarkText ?? false ? .black : .white)
@@ -55,6 +57,10 @@ struct FeedCellScr: View {
                     await likeQuote()
                 }
             }
+            .onLongPressGesture(minimumDuration: 0.3) {
+                showNoti.toggle()
+//                NotificationManager.shared.clearAllPendingNoti()
+            }
             
             VStack {
                 Spacer()
@@ -68,6 +74,7 @@ struct FeedCellScr: View {
                     
                     if !quote.author.isEmpty {
                         Button {
+                            UserDefaults.standard.set(quote.author, forKey: AUTHOR)
                             showInfo.toggle()
                         } label: {
                             ThreeImgBtnLbl(imgName: "info.circle")
@@ -89,6 +96,12 @@ struct FeedCellScr: View {
             }
         }
         .sensoryFeedback(.impact(weight: .medium, intensity: 1), trigger: isLiked)
+        .sheet(isPresented: $showInfo) {
+            InfoScreen(showInfo: $showInfo)
+        }
+        .sheet(isPresented: $showNoti) {
+            NotiReportScreen()
+        }
 
     }
     
@@ -103,10 +116,9 @@ struct FeedCellScr: View {
     }
     
     private func hitLikeQuote() async {
-        let uid = userID ?? ""
         
         if isLiked {
-            await ServiceUpload.shared.unLikeQuote(userID: uid, quote: quote, likeQuote: nil)
+            await ServiceUpload.shared.unLikeQuote(userID: user.userID, quote: quote, likeQuote: nil)
             isLiked = false
         } else {
             await likeQuote()
@@ -114,10 +126,9 @@ struct FeedCellScr: View {
     }
     
     private func likeQuote() async {
-        let uid = userID ?? ""
         isLiked = true
         opaLike = 1
-        await ServiceUpload.shared.uploadLikeQuote(userID: uid, quote: quote)
+        await ServiceUpload.shared.uploadLikeQuote(userID: user.userID, quote: quote)
         
         try? await Task.sleep(nanoseconds: 0_900_000_000)//delay 9ms
         opaLike = 0
@@ -138,7 +149,7 @@ struct FeedCellScr: View {
 }
 
 #Preview {
-    FeedCellScr(quote: Quote.mockQuote, showInfo: .constant(false), showCateOnTop: .constant(true))
+    FeedCellScr(user: .constant(User.mockData), quote: Quote.mockQuote)
 }
 
 //MARK: -----------------------------------------------

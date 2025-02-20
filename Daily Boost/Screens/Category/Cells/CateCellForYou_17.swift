@@ -14,9 +14,10 @@ struct CateCellForYou: View {
     let frameDim: CGFloat = 88
     
     @Binding var chosenCatePathArr: [String]
+    @Binding var user: User
     var cateP: String
-    @Binding var showCateQuotes: Bool
     
+    @State var showCateQuotes: Bool = false
     @State var mainColor: Color = .clear
     
     var body: some View {
@@ -31,7 +32,7 @@ struct CateCellForYou: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: imgDim, height: imgDim)
-                    .padding(.top, 20)
+                    .padding(.top, 18)
                 Spacer()
             }
             
@@ -54,7 +55,7 @@ struct CateCellForYou: View {
                 Text(cateP.getCate())
                     .font(.caption)
                     .fontWeight(.regular)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.9)
                     .padding(.all, 8)
                     .padding(.bottom, 4)
                     .frame(width: frameDim + 16)
@@ -62,12 +63,16 @@ struct CateCellForYou: View {
             }
             
         }
-        .onTapGesture {
-            //gotta have this to make the HScrollV dragable
-        }
-        .onLongPressGesture(minimumDuration: 0.3) {
+        .sensoryFeedback(.selection, trigger: showCateQuotes)
+        .sensoryFeedback(.decrease, trigger: chosenCatePathArr)
+        .onTapGesture { //gotta have this to make the HScrollV dragable
             showCateQuotes.toggle()
-            UserDefaults.standard.set(cateP, forKey: CATEPATH_CATEQUOTES)
+        }
+//        .onLongPressGesture(minimumDuration: 0.3) {
+//            showCateQuotes.toggle()
+//        }
+        .fullScreenCover(isPresented: $showCateQuotes) {
+            CateQuotesScreen(catePath: cateP, user: $user, showCateQuotes: $showCateQuotes, chosenCatePathArr: $chosenCatePathArr)
         }
     }
     
@@ -80,5 +85,5 @@ struct CateCellForYou: View {
 }
 
 #Preview {
-    CateCellForYou(chosenCatePathArr: .constant(Quote.purposeStrArr), cateP: "", showCateQuotes: .constant(false))
+    CateCellForYou(chosenCatePathArr: .constant(Quote.purposeStrArr), user: .constant(User.mockData), cateP: "")
 }

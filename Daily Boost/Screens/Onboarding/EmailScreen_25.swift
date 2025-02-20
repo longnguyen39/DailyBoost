@@ -108,6 +108,7 @@ struct EmailScreen: View {
     
     private func createUser() async throws {
         showLoading = true
+//        try? await Task.sleep(nanoseconds: 0_500_000_000) //0.5s
         var hasError = false
         
         await AuthService.shared.createUser(user: user, cateArr: pickedCateArr) { hasErr, err in
@@ -119,13 +120,13 @@ struct EmailScreen: View {
                 showLoading = !hasErr
             }
         }
-        try? await Task.sleep(nanoseconds: 0_100_000_000) //0.1s
         showLoading = false
         
         if !hasError {
             UserDefaults.standard.set(false, forKey: UserDe.first_time)
             UserDefaults.standard.set(FictionOption.both.name, forKey: UserDe.fictionOption)
             
+            UserDefaults.standard.set(true, forKey: UserDe.justLogin)
             firstTime.isFirstTime.toggle()
             print("DEBUG_12: user is \(user.email)")
         }

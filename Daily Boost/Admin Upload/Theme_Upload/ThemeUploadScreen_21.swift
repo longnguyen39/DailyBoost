@@ -8,7 +8,7 @@
 import SwiftUI
 import Firebase
 
-let themeTitleGlobal = ThemeWallpaper.architecture.name
+let themeTitleGlobal = ThemeWallpaper.plain.name
 var imgNameGlobal = "" //for PreviewThemeScreen
 
 struct ThemeUploadScreen: View {
@@ -19,7 +19,7 @@ struct ThemeUploadScreen: View {
     var body: some View {
         VStack {
             ScrollView {
-                ForEach(1...10, id: \.self) { imgInt in
+                ForEach(39...58, id: \.self) { imgInt in
                     ThemeHView(showPreviewScreen: $showPreviewTheme, themeImg: "theme\(imgInt)", isDarkText: $isDarkText)
                 }
             }

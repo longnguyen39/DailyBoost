@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct WidgetScreen: View {
-    
-    var notiGranted: Bool
-    
+        
     @Binding var user: User
     @Binding var pickedCateArr: [String]
     
@@ -37,37 +35,12 @@ struct WidgetScreen: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
-        .onAppear {
-            Task {
-                if notiGranted {
-                    await setNoti()
-                }
-            }
-        }
-    }
-    
-    private func setNoti() async {
-        NotificationManager.shared.clearAllPendingNoti()
-        
-        var block = (user.end + 12 - user.start) * 60 / user.howMany
-        block += (block / user.howMany) //based on testing
-        
-        for notiInt in 0..<user.howMany {
-            if notiInt == user.howMany - 1 {
-                await NotificationManager.shared.scheduleNoti(hour: user.end+12, min: 0, catePArr: pickedCateArr)
-            } else {
-                let t = (user.start * 60) + (notiInt * block)
-                let hour = t / 60
-                let min = t % 60
-                await NotificationManager.shared.scheduleNoti(hour: hour, min: min, catePArr: pickedCateArr)
-            }
-        }
     }
     
 }
 
 #Preview {
-    WidgetScreen(notiGranted: false, user: .constant(User.initState), pickedCateArr: .constant(Quote.purposeStrArr))
+    WidgetScreen(user: .constant(User.initState), pickedCateArr: .constant(Quote.purposeStrArr))
 }
 
 //-------------------------------------------------

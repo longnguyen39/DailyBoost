@@ -8,6 +8,7 @@
 import Foundation
 
 enum CateTitle: CaseIterable {
+    case zero
     case one
     case two
     case three
@@ -19,7 +20,9 @@ enum CateTitle: CaseIterable {
     
     var title: String {
         switch self {
-
+            
+        case .zero:
+            return "Most Popular"
         case .one:
             return "Love yourself"
         case .two:

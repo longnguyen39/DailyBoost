@@ -37,7 +37,7 @@ struct LikeQuoteScreen: View {
                             .padding()
                         
                         ForEach(likeQuotes, id: \.self) { likeQuote in
-                            LikeQuoteCell(quote: likeQuote, likeQPicked: $likeQPicked, showADelete: $showADelete)
+                            LikeQuoteCell(quote: likeQuote, likeQPicked: $likeQPicked, showADelete: $showADelete, username: user.username)
                                 .padding(.bottom, 8)
                                 .transition(.scale)
                         }
@@ -145,11 +145,12 @@ struct LikeQuoteCell: View {
     var quote: LikeQuote
     @Binding var likeQPicked: LikeQuote
     @Binding var showADelete: Bool
+    var username: String = ""
     
     var body: some View {
         VStack(alignment: .leading) {
             
-            Text(quote.script.isEmpty ? "Loading..." : quote.script)
+            Text(quote.script.isEmpty ? "Loading..." : quote.script.replacingOccurrences(of: "USERNAME", with: username))
                 .font(.system(size: 16))
                 .fontWeight(.regular)
                 .multilineTextAlignment(.leading)

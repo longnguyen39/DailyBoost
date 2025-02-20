@@ -31,8 +31,8 @@ struct TimeScreen: View {
             
             HowMany(widthFrame: timeWidthFrame, howMany: $user.howMany).padding()
             
-            TimeView(widthFrame: timeWidthFrame, context: "Start at", time: $user.start).padding(.top, 12)
-            TimeView(widthFrame: timeWidthFrame, context: "End at", time: $user.end).padding(.top, -4)
+            TimeStartView(widthFrame: timeWidthFrame, start: $user.start, end: $user.end).padding(.top, 12)
+            TimeEndView(widthFrame: timeWidthFrame, start: $user.start, end: $user.end).padding(.top, -4)
             
             Spacer()
             
@@ -40,7 +40,6 @@ struct TimeScreen: View {
                 if notiGranted {
                     NavigationLink {
                         WidgetScreen(
-                            notiGranted: message == "You have allowed notification!",
                             user: $user,
                             pickedCateArr: $pickedCateArr)
                     } label: {
@@ -71,6 +70,7 @@ struct TimeScreen: View {
             Text("\(message)")
         }
     }
+    
 }
 
 #Preview {
@@ -129,15 +129,15 @@ struct HowMany: View {
     }
 }
 
-struct TimeView: View {
+struct TimeStartView: View {
     
     var widthFrame: CGFloat
-    var context: String
-    @Binding var time: Int
+    @Binding var start: Int
+    @Binding var end: Int
     
     var body: some View {
         HStack {
-            Text(context)
+            Text("Start at")
                 .font(.system(size: 18))
                 .fontWeight(.medium)
                 .padding()
@@ -145,33 +145,37 @@ struct TimeView: View {
             Spacer()
             
             Button {
-                if time > 0 {
-                    time -= 1
+                if validMinus() {
+                    start -= TimeDecree
                 }
             } label: {
                 Image(systemName: "minus.circle")
                     .imageScale(.large)
                     .fontWeight(.semibold)
-                    .foregroundStyle(time == 0 ? .gray : .blue)
+                    .foregroundStyle(start >= TimeDecree ? .blue : .gray)
             }
+            .disabled(!validMinus())
+            .sensoryFeedback(.increase, trigger: start)
             
-            Text("\(time):00 \(timeFrame())")
+            Text(displayTime())
                 .font(.system(size: 18))
                 .fontWeight(.regular)
                 .frame(width: widthFrame)
                 .padding(.horizontal, 12)
             
             Button {
-                if time < 11 {
-                    time += 1
+                if validPlus() {
+                    start += TimeDecree
                 }
             } label: {
                 Image(systemName: "plus.circle")
                     .imageScale(.large)
                     .fontWeight(.semibold)
-                    .foregroundStyle(time == 11 ? .gray : .blue)
+                    .foregroundStyle(start < 86400 - TimeDecree ? .blue : .gray)
                     .padding(.trailing)
             }
+            .disabled(!validPlus())
+            .sensoryFeedback(.increase, trigger: start)
         }
         .frame(width: UIScreen.width-48, height: 64)
         .background(DARK_GRAY)
@@ -179,7 +183,106 @@ struct TimeView: View {
         .padding(.horizontal)
     }
     
-    private func timeFrame() -> String {
-        return context == "Start at" ? "AM" : "PM"
+    private func displayTime() -> String {
+        let hour = start / 3600
+        let min = (start % 3600) / 60
+        let minStr = min < 10 ? "0\(min)" : "\(min)"
+        
+        if hour < 12 {
+            return "\(hour):\(minStr) AM"
+        } else {
+            if hour-12 == 0 {
+                return "12:\(minStr) PM"
+            } else {
+                return "\(hour-12):\(minStr) PM"
+            }
+        }
+    }
+    
+    private func validPlus() -> Bool {
+        return start < end - TimeDecree
+    }
+    
+    private func validMinus() -> Bool {
+        return start >= TimeDecree
+    }
+}
+
+struct TimeEndView: View {
+    
+    var widthFrame: CGFloat
+    @Binding var start: Int
+    @Binding var end: Int
+    
+    var body: some View {
+        HStack {
+            Text("End at")
+                .font(.system(size: 18))
+                .fontWeight(.medium)
+                .padding()
+            
+            Spacer()
+            
+            Button {
+                if validMinus() {
+                    end -= TimeDecree
+                }
+            } label: {
+                Image(systemName: "minus.circle")
+                    .imageScale(.large)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.blue)
+            }
+            .disabled(!validMinus())
+            .sensoryFeedback(.increase, trigger: end)
+            
+            Text(displayTime())
+                .font(.system(size: 18))
+                .fontWeight(.regular)
+                .frame(width: widthFrame)
+                .padding(.horizontal, 12)
+            
+            Button {
+                if validPlus() {
+                    end += TimeDecree
+                }
+            } label: {
+                Image(systemName: "plus.circle")
+                    .imageScale(.large)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.blue)
+                    .padding(.trailing)
+            }
+            .disabled(!validPlus())
+            .sensoryFeedback(.increase, trigger: end)
+        }
+        .frame(width: UIScreen.width-48, height: 64)
+        .background(DARK_GRAY)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+    
+    private func displayTime() -> String {
+        let hour = end / 3600
+        let min = (end % 3600) / 60
+        let minStr = min < 10 ? "0\(min)" : "\(min)"
+        
+        if hour < 12 {
+            return "\(hour):\(minStr) AM"
+        } else {
+            if hour-12 == 0 {
+                return "12:\(minStr) PM"
+            } else {
+                return "\(hour-12):\(minStr) PM"
+            }
+        }
+    }
+    
+    private func validPlus() -> Bool {
+        return end < 86400 - TimeDecree
+    }
+    
+    private func validMinus() -> Bool {
+        return start < end - TimeDecree
     }
 }

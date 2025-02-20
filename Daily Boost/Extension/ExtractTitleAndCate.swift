@@ -125,6 +125,8 @@ extension String {
             return Cate1_LoveSelf.women.name
         } else if order == "15" {
             return Cate1_LoveSelf.men.name
+        } else if order == "16" {
+            return Cate1_LoveSelf.affirmations.name
         } else {
             return ""
         }
@@ -203,6 +205,8 @@ extension String {
             return Cate4_Prod.discipline.name
         } else if order == "13" {
             return Cate4_Prod.failure.name
+        } else if order == "14" {
+            return Cate4_Prod.procrastination.name
         } else {
             return ""
         }

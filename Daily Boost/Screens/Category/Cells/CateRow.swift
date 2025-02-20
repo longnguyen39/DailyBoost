@@ -64,8 +64,8 @@ struct CateRow: View {
         if chosenCatePathArr.count > 1 {
             //de-select picked cateP
             for catePh in chosenCatePathArr {
-                if catePh.getCate() == cateP.getCate() {
-                    chosenCatePathArr = chosenCatePathArr.filter() { $0.getCate() != cateP.getCate()
+                if catePh == cateP {
+                    chosenCatePathArr = chosenCatePathArr.filter() { $0 != cateP
                     }
                     didRemove = true
                     break

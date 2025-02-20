@@ -112,14 +112,14 @@ struct LoginScreen: View {
             //proceed when login succeeds
             UserDefaults.standard.set(false, forKey: UserDe.first_time)
             UserDefaults.standard.set(FictionOption.both.name, forKey: UserDe.fictionOption)
-            
-            UserDefaults.standard.set(true, forKey: UserDe.loginDetected) //set noti when login
-
-            
+                        
+            UserDefaults.standard.set(true, forKey: UserDe.justLogin)
             firstTime.isFirstTime.toggle()
             print("DEBUG_26: just login \(email)")
         }
     }
+    
+    
 }
 
 #Preview {

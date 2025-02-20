@@ -10,13 +10,15 @@ import SwiftUI
 struct PurposeScreen: View {
     
     @Environment(\.colorScheme) var mode
+    @Environment(AppDelegate.self) var appData
+    
     let rows: [GridItem] = [GridItem(.flexible()),
                             GridItem(.flexible()),
                             GridItem(.flexible())] // 3 rows, space btw rows
     let purposeArr: [String] = Quote.purposeStrArr
     @State var user: User = User.initState
     @State var pickedCateArr: [String] = []
-    
+        
     var body: some View {
         NavigationView {
             VStack {
@@ -75,7 +77,9 @@ struct PurposeScreen: View {
                 .padding(.top, 8)
             }
             .toolbar(.hidden, for: .navigationBar)
-            
+            .onAppear {
+                appData.notiQPath = ""
+            }
         }
     }
     
@@ -129,8 +133,8 @@ struct PurposeCell: View {
             foregroundC = mode == .light ? .black : .white
         }
         .onAppear {
-            backgroundC = mode == .light ? LIGHT_GRAY : DARK_GRAY
-            foregroundC = mode == .light ? .black : .white
+            backgroundC = returnBackgroundC()
+            foregroundC = returnForegroundC()
         }
         .onTapGesture {
             pickPurpose(purpose: purpose)

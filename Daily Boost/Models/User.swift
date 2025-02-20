@@ -22,9 +22,11 @@ struct User: Decodable { //cannot be encoded due to var cateArr
     var cateArr: [String]
     var histArr: [String]
     
-    static var mockData: User = User(username: "Batman", email: "batman@gmail.com", userID: "asd123", dateSignedUp: Date.now, fictionOption: FictionOption.both.name, plan: "", start: 8, end: 10, howMany: 10, cateArr: Quote.purposeStrArr, histArr: [])
+    static var mockData: User = User(username: "Batman", email: "batman@gmail.com", userID: "asd123", dateSignedUp: Date.now, fictionOption: FictionOption.both.name, plan: "", start: 8*3600, end: 10*3600, howMany: 12, cateArr: Quote.purposeStrArr, histArr: [])
     
-    static var initState: User = User(username: "username", email: "", userID: "", dateSignedUp: Date.now, fictionOption: FictionOption.both.name, plan: "", start: 8, end: 10, howMany: 10, cateArr: Quote.purposeStrArr, histArr: [])
+    static var initState: User = User(username: "username", email: "", userID: "", dateSignedUp: Date.now, fictionOption: FictionOption.both.name, plan: "", start: 8*3600, end: 22*3600, howMany: 12, cateArr: [], histArr: [])
+    
+//    static var initState: User = User(username: "username", email: "", userID: "", dateSignedUp: Date.now, fictionOption: FictionOption.both.name, plan: "", start: 1200, end: 1320, howMany: 20, cateArr: Quote.purposeStrArr, histArr: [])
     
 }
 

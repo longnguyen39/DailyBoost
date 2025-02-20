@@ -26,6 +26,10 @@ struct CateSection: View {
             
             VStack(spacing: 8) {
                 switch caseOrder {
+                case .zero:
+                    ForEach(Cate0_MostPop.allCases, id: \.self) { cate in
+                        CateRow(cateP: "\(cate.title)/\(cate.name)", chosenCatePathArr: $chosenCatePathArr)
+                    }
                 case .one:
                     ForEach(Cate1_LoveSelf.allCases, id: \.self) { cate in
                         CateRow(cateP: "\(CateTitle.one.title)/\(cate.name)", chosenCatePathArr: $chosenCatePathArr)

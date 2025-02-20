@@ -7,6 +7,7 @@
 
 /*
  
+ 
  -Current highest count: CateAdjustScreen_28
  -When upload Theme Img, be slow and careful
  
@@ -67,5 +68,34 @@
  -We use Local notifications to send users quotes. Here is the link to learn more in the future: https://www.youtube.com/watch?v=6Y9KDTjmpLA
  
  -
+ 
+ */
+
+/*
+ 
+ BUGS: (works fine on simulator but suck in real device)
+ 
+ -Cell Appear func: 
+ 
+ 
+ 
+ //-------------------------------------------------
+ 
+ Scenario set noti:
+ 
+ 1. user login / sign up, screenAppear called
+ 2. user refresh app with sign in, screenAppear called
+ 3. user tap noti to open app, screenAppear called
+ 4. user open pending app, no func called
+ 5. user tap noti to open app, no func called
+ 6. user update cateArr
+ 
+ Where to set setNoti func:
+ 
+ 1. screenAppear
+ 2. screenAppear from noti
+ 3. scene active (with !userID.isEmpty)
+ 4. user update cateArr (update standbyQ)
+ 
  
  */

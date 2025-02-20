@@ -24,6 +24,7 @@ import Foundation
   1.13  Cate1_LoveSelf selfDoubt
   1.14  Cate1_LoveSelf women
   1.15  Cate1_LoveSelf men
+  1.16  Cate1_LoveSelf affirmations
   
   2.1   Cate2_Hard overthinking
   2.2   Cate2_Hard uncertainty
@@ -57,6 +58,7 @@ import Foundation
   4.11  Cate4_Prod hustling
   4.12  Cate4_Prod discipline
   4.13  Cate4_Prod failure
+  4.14  Cate4_Prod procrastination
   
   5.1   Cate5_Relation trust
   5.2   Cate5_Relation honesty
@@ -112,6 +114,8 @@ import Foundation
 
 struct Quotes {
     
+    static let u = "USERNAME"
+    
 //MARK: Quote report
 //---------------------------------------------------------
     var sumTitle1: Int
@@ -132,13 +136,20 @@ struct Quotes {
     static func getFictionOrNot() {
         isUploadingFiction = false
     }
+    
     static let quoteUploadArr: [String] = [
         
         //template:
         //"1.3>Someone’s sitting in the shade today because someone planted a tree a long time ago.*Warren Buffet",
+        //"1.16>Everything will be alright, USERNAME."
        
+        "1.2>No, \(u). Don't even think of giving up."
         
-
+        
+        
+        
+        
+        
         
         
     ]

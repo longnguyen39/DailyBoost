@@ -11,18 +11,18 @@ import SwiftUI
 struct CategoryScreen: View {
     
     @Environment(\.scenePhase) var scenePhase
-
+    
     @AppStorage(currentUserDefaults.userID) var userID: String? //this on constantly pull data from userDefaults (if data from userDefaults change, it also changes live)
 
     @Binding var showCate: Bool
-    @Binding var chosenCatePathArr: [String]
     @Binding var refetch: Bool
+    @Binding var user: User
     
 //    @State var searchText: String = ""
 //    @State var searchIsActive = false
     
-    @State var showCateQuotesScr: Bool = false
     @State var isChanged: Bool = false
+    @State var notiGranted: Bool = false
         
     @State var fictionPicked: FictionOption = .both
     
@@ -33,21 +33,27 @@ struct CategoryScreen: View {
                     FictionSection(fictionPicked: $fictionPicked, isChanged: $isChanged)
                         .padding()
                     
-                    YourCateHScrollV(chosenCatePathArr: $chosenCatePathArr, showCateQuotes: $showCateQuotesScr)
+                    YourCateHScrollV(chosenCatePathArr: $user.cateArr, user: $user)
                         .padding(.bottom, 32)
                         .padding(.top)
                     
                     ForEach(CateTitle.allCases, id: \.self) { order in
-                        CateHScrollV(caseOrder: order, chosenCatePathArr: $chosenCatePathArr, showCateQuotes: $showCateQuotesScr)
+                        CateHScrollV(caseOrder: order, chosenCatePathArr: $user.cateArr, user: $user)
                     }
                 }
                 
                 Button {
                     Task {
+                        NotificationManager.shared.requestAuthorization { granted in
+                            notiGranted = granted
+                        }
                         await saveChanges()
+                        if notiGranted {
+                            await setAllNoti(user: user)
+                        }
                     }
                 } label: {
-                    ThemeBtnView(context: "Show \(chosenCatePathArr.count) categories")
+                    ThemeBtnView(context: "Show \(user.cateArr.count) categories")
                         .fontWeight(.medium)
                         .padding(.top, -8)
                 }
@@ -62,11 +68,8 @@ struct CategoryScreen: View {
                     showCate = false
                 }
             }
-            .onChange(of: chosenCatePathArr) {
+            .onChange(of: user.cateArr) {
                 isChanged = true
-            }
-            .fullScreenCover(isPresented: $showCateQuotesScr) {
-                CateQuotesScreen(showCateQuotesScr: $showCateQuotesScr, chosenCatePathArr: $chosenCatePathArr)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -87,7 +90,7 @@ struct CategoryScreen: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(
-                        destination: CateAdjustScreen(showCate: $showCate, chosenCatePathArr: $chosenCatePathArr, refetch: $refetch, fictionPicked: $fictionPicked)
+                        destination: CateAdjustScreen(showCate: $showCate, refetch: $refetch, fictionPicked: $fictionPicked, user: $user)
                     ) {
                         Image(systemName: "slider.horizontal.3")
                             .imageScale(.large)
@@ -112,20 +115,21 @@ struct CategoryScreen: View {
     }
     
     private func saveChanges() async {
-        print("DEBUG_4: cate chosen is \(chosenCatePathArr.count)")
+        print("\nDEBUG_4: cate chosen is \(user.cateArr.count)")
         
         //upload new arr to database
         UserDefaults.standard.set(fictionPicked.name, forKey: UserDe.fictionOption)
-        await ServiceUpload.shared.updateCatePathArr(userID: userID ?? "nil", cateArr: chosenCatePathArr)
+        await ServiceUpload.shared.updateCatePathArr(userID: userID ?? "nil", cateArr: user.cateArr)
         
         //refetch quoteArr in HomeScr
         refetch.toggle()
         showCate.toggle()
     }
+    
 }
 
 #Preview {
-    CategoryScreen(showCate: .constant(false), chosenCatePathArr: .constant(Quote.purposeStrArr), refetch: .constant(false))
+    CategoryScreen(showCate: .constant(false), refetch: .constant(false), user: .constant(User.initState))
 }
 
 //MARK: ------------------------------------------------
@@ -133,7 +137,7 @@ struct CategoryScreen: View {
 struct YourCateHScrollV: View {
     
     @Binding var chosenCatePathArr: [String]
-    @Binding var showCateQuotes: Bool
+    @Binding var user: User
     
     var body: some View {
         VStack(spacing: 16) {
@@ -148,7 +152,7 @@ struct YourCateHScrollV: View {
             ScrollView(.horizontal) {
                 LazyHGrid(rows: [GridItem(.flexible())], spacing: 10) {
                     ForEach(chosenCatePathArr, id: \.self) { cateP in
-                        CateCellForYou(chosenCatePathArr: $chosenCatePathArr, cateP: cateP, showCateQuotes: $showCateQuotes)
+                        CateCellForYou(chosenCatePathArr: $chosenCatePathArr, user: $user, cateP: cateP)
                             .transition(.scale)
                             .sensoryFeedback(.decrease, trigger: chosenCatePathArr)
                     }
@@ -156,7 +160,7 @@ struct YourCateHScrollV: View {
                 .padding(.horizontal)
             }
             .scrollIndicators(.hidden)
-            .frame(height: 96)
+            .frame(height: 100)
         }
     }
 }
@@ -177,13 +181,13 @@ struct FictionSection: View {
             
             FictionRow(fictionOption: .fiction, fictionPicked: $fictionPicked, isChanged: $isChanged).padding(.top, 4)
             Divider()
-                .padding(.horizontal, 64)
+                .padding(.horizontal)
                 .padding(.bottom, 8)
                 .opacity(0.7)
             
             FictionRow(fictionOption: .nonFiction, fictionPicked: $fictionPicked, isChanged: $isChanged).padding(.bottom, 8)
             Divider()
-                .padding(.horizontal, 64)
+                .padding(.horizontal)
                 .padding(.bottom, 8)
                 .opacity(0.7)
             

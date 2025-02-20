@@ -14,7 +14,6 @@ import FirebaseFirestoreSwift
 struct AuthService {
     
     static let shared = AuthService() //only 1 instance reused
-
     
 //MARK: - Auth Function
 //------------------------------------------------------
@@ -30,6 +29,10 @@ struct AuthService {
             completion(false)
             return
         }
+        
+        //delete all noti
+        NotificationManager.shared.clearAllPendingNoti()
+        NotificationManager.shared.clearAllDeliveredNoti()
         
         //deleting all UserDefaults
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -89,9 +92,9 @@ struct AuthService {
         }
         
         do {
-            let result = try await Auth.auth().createUser(withEmail: user.email, password: "DailyBoost_\(user.email)")
-            await self.uploadUserData(userID: result.user.uid, passedUser: user, cateArr: cateArr) //wait until the result is set, then func executes. Before Async/Await, we gotta use completion block
-            print("DEBUG_13: just done upload userInfo")
+            let result = try await Auth.auth().createUser(withEmail: user.email, password: "DB-\(user.email)")
+            try await self.uploadUserData(userID: result.user.uid, passedUser: user, cateArr: cateArr)
+            print("DEBUG_13: just done upload userInfo and standby quotes")
             completion(false, "")
         } catch {
             let e = "\(error.localizedDescription) Please exit the app and try again."
@@ -116,11 +119,12 @@ struct AuthService {
 //MARK: - API Function
 //------------------------------------------------------
     
-    private func uploadUserData(userID: String, passedUser: User, cateArr: [String]) async {
+    private func uploadUserData(userID: String, passedUser: User, cateArr: [String]) async throws {
         
         var user = passedUser
         user.userID = userID
         user.plan = "free"
+        user.username = user.email.getUsername()
         
         let docData: [String: Any] = [
             DB_User.username: user.username,
@@ -137,9 +141,10 @@ struct AuthService {
         ] //we can also use encodedUser method
         
         try? await Firestore.firestore().collection(DB_User.coll).document(userID).setData(docData)
-        UserDefaults.standard.set(user.userID, forKey: currentUserDefaults.userID)
+        UserDefaults.standard.set(userID, forKey: currentUserDefaults.userID)
         
     }
+    
     
     private func checkEmailExistInDB(email: String) async -> Bool {
         let snapshot = Firestore.firestore().collection(DB_User.coll).whereField("email", isEqualTo: email)

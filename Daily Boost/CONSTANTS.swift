@@ -9,6 +9,7 @@ import Firebase
 import SwiftUI
 
 let DB_SOURCE_URL = "sourceURL"
+let AUTHOR = "AUTHOR" //stupid Xcode bug that makes me do this
 let DARK_GRAY = Color.gray.opacity(0.2)
 let LIGHT_GRAY = Color(.systemGray6)
 
@@ -42,13 +43,16 @@ struct DB_Theme {
 }
 
 
-let CATEPATH_CATEQUOTES = "CateQuotes"
-
 let DB_CATETITLE_COLL = "quotes"
 
 
 struct UserDe {
     static let fictionOption = "fictionOption"
+    
+    static let lastDayOpened = "lastDayOpened"
+    static let lastSecTilMidnight = "lastSecTilMidnight"
+    static let currentStreak = "currentStreak"
+    static let justLogin = "justLogin"
     
     static let first_time = "userDefault_firstTime" //can be ignored if we authorize only checking userID
 
@@ -67,8 +71,8 @@ struct UserDe {
     static let isDarkText = "isDarkText"
     static let themeFileName = "themeFileName"
     
-    static let loginDetected = "loginDetected"
 }
 
 let DB_QUOTE_HIST = 30 //max hist is 30 quotes
+let TimeDecree = 30*60 //plus or minus seconds
 let resetPassNote = "We just send a Reset-Password link to your email. Please check your inbox."

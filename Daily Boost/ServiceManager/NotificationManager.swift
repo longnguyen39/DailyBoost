@@ -20,52 +20,65 @@ class NotificationManager {
                 print("DEBUG_Noti: err notification \(e)")
             } else {
                 if granted {
-                    print("DEBUG_Noti: notification granted!")
+                    print("\nDEBUG_Noti: notification granted!")
                     completion(true)
                 } else {
-                    print("DEBUG_Noti: notification denied!")
+                    print("\nDEBUG_Noti: notification denied!")
                     completion(false)
                 }
             }
         }
     }
     
-    func scheduleNoti(hour: Int, min: Int, catePArr: [String]) async {
-        let quote = await ANewQ(catePArr: catePArr)
+    func setANotiWithQ(timeSec: Int, quote: Quote, username: String) {
+        
+        let script = quote.script.replacingOccurrences(of: "USERNAME", with: username)
         
         let content = UNMutableNotificationContent()
         content.title = "Daily Boost"
-        content.body = "\(quote.script)" //\n for skip line
+        content.body = script
         content.userInfo = ["quotePath": "\(quote.title)/\(quote.category)#\(quote.orderNo)"]
         content.sound = .default
         
-        var dateComp = DateComponents()
-        dateComp.hour = hour
-        dateComp.minute = min
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: true)//repeat daily
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: Double(timeSec), repeats: false)
         
         let request = UNNotificationRequest(
             identifier: UUID().uuidString,
             content: content,
             trigger: trigger)
-        do {
-            try await UNUserNotificationCenter.current().add(request)
-        } catch {
-            print("DEBUG_Noti: error setting noti request")
-        }
+        
+        UNUserNotificationCenter.current().add(request)
+    }
+    
+    func setReminderNoti(timeSec: Int) {
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Daily Boost"
+        content.body = "Hello, time to read some Daily Boost Motivation!"
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: Double(timeSec), repeats: false)
+        
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request)
     }
     
     func clearAllPendingNoti() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
     
+    func clearAllDeliveredNoti() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    }
+    
     
 //MARK: --------------------------------------------------
     
-    private func ANewQ(catePArr: [String]) async -> Quote {
-        let randPath = catePArr.randomElement()!
-        return await ServiceFetch.shared.fetchARandQuote(title: randPath.getTitle(), cate: randPath.getCate())
-    }
+    
     
 }
 

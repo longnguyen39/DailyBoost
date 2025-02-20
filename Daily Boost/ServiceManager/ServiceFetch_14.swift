@@ -20,8 +20,9 @@ class ServiceFetch {
 //MARK: - Functions Quote
     
     func fetchARandQuote(title: String, cate: String) async -> Quote {
+        let option = fictionOption ?? FictionOption.both.name
         let randInt = await generateRandInt(title: title, cate: cate, showOneCate: false, count_nf: -1, count_f: -1)
-        print("DEBUG_14: randInt \(title)/\(cate) is \(randInt)")
+        print("DEBUG_14: (\(option)) - \(title)/\(cate) #\(randInt)")
         return await fetchAQuote(title: title, cate: cate, orderNo: randInt)
     }
     
@@ -63,6 +64,10 @@ class ServiceFetch {
         } else {
             countNF = await fetchQuoteCount(title: title, cate: cate, isFiction: false)
             countF = await fetchQuoteCount(title: title, cate: cate, isFiction: true)
+            
+            //debug here
+//            print("DEBUG: (\(title) - \(cate)) and countNF = \(countNF), countF = \(countF)")
+            countNF = countNF == 0 ? 1 : countNF
         }
         
         //arr has 1 F quote and 1 NF quote
@@ -79,8 +84,6 @@ class ServiceFetch {
             return bothArr.randomElement()!
             
         } else { //set arr
-            let option = fictionOption ?? "none"
-            print("DEBUG_14: now fetch \(option)")
             
             if fictionOption == FictionOption.nonFiction.name {
                 return Int.random(in: 1...countNF)
@@ -142,6 +145,7 @@ class ServiceFetch {
         }
     }
     
+    
 //MARK: - Functions LikeQuote
     
     func fetchLikeQCount(userID: String) async -> Int {
@@ -167,7 +171,7 @@ class ServiceFetch {
         }
         pagiSnapshot = lastSnapshot
         
-        return snapshot.documents.compactMap({ try? $0.data(as: LikeQuote.self) }) //loop snapshot, map (sort) all info and cast them as type Quote, return [Quote]
+        return snapshot.documents.compactMap({ try? $0.data(as: LikeQuote.self) }) //loop snapshot, map (sort) all info and cast them as type LikeQuote, return [LikeQuote]
     }
     
     func configPagiLikeQArr(userID: String) async throws -> [LikeQuote] {

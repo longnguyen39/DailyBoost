@@ -140,6 +140,7 @@ struct ProfileScreen: View {
     
     private func signOut() {
         AuthService.shared.logOutUser { success in
+            
             clearThemeImage()
             showLoading = false
 

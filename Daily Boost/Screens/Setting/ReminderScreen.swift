@@ -15,7 +15,6 @@ struct ReminderScreen: View {
     @State var notiGranted: Bool = false
     
     @Binding var user: User
-    var chosenCatePArr: [String]
     
     @State var didChange: Bool = false
     @State var showLoading: Bool = false
@@ -35,8 +34,9 @@ struct ReminderScreen: View {
                     VStack(spacing: 24) {
                         ReminderHowManyRow(howMany: $howMany, didChange: $didChange)
                             .padding(.top)
-                        ReminderTimeRow(time: $start, context: "Start at", didChange: $didChange)
-                        ReminderTimeRow(time: $end, context: "End at", didChange: $didChange)
+                        ReminderStartTimeRow(start: $start, end: $end, didChange: $didChange)
+                        ReminderEndTimeRow(start: $start, end: $end, didChange: $didChange)
+
                             .padding(.bottom)
                     }
                     .overlay {
@@ -60,7 +60,7 @@ struct ReminderScreen: View {
                     } label: {
                         ThemeBtnView(context: didChange ? "Save changes" : "Saved!")
                             .fontWeight(.medium)
-                            .opacity(didChange ? 1 : 0.4)
+                            .opacity(didChange ? 1 : 0.6)
                     }
                     .disabled(!didChange)
                     
@@ -105,6 +105,8 @@ struct ReminderScreen: View {
             end = user.end
         }
     }
+
+//MARK: - Function
     
     private func saveChanges() async {
         showLoading = true
@@ -113,45 +115,22 @@ struct ReminderScreen: View {
         user.end = end
         user.start = start
         
+        //set noti + update DB
         do {
             try await ServiceUpload.shared.updateUserReminder(user: user)
-            await setNoti()
-//            await setMockNoti()
             didChange = false
             showLoading = false
+            await setAllNoti(user: user)
         } catch {
             print("DEBUG_ReminderScr: err updating reminder")
             showLoading = false
         }
     }
     
-    private func setNoti() async {
-        NotificationManager.shared.clearAllPendingNoti()
-        
-        var block = (end + 12 - start) * 60 / howMany
-        block += (block / howMany) //based on testing
-        
-        for notiInt in 0..<howMany {
-            if notiInt == howMany - 1 {
-                await NotificationManager.shared.scheduleNoti(hour: end+12, min: 0, catePArr: chosenCatePArr)
-            } else {
-                let t = (start * 60) + (notiInt * block)
-                let hour = t / 60
-                let min = t % 60
-                await NotificationManager.shared.scheduleNoti(hour: hour, min: min, catePArr: chosenCatePArr)
-            }
-        }
-    }
-    
-    private func setMockNoti() async {
-        NotificationManager.shared.clearAllPendingNoti()
-        
-        await NotificationManager.shared.scheduleNoti(hour: 0, min: 19, catePArr: chosenCatePArr)
-    }
 }
 
 #Preview {
-    ReminderScreen(user: .constant(User.initState), chosenCatePArr: [])
+    ReminderScreen(user: .constant(User.initState))
 }
 
 //----------------------------------------------------
@@ -179,9 +158,10 @@ struct ReminderHowManyRow: View {
                 Image(systemName: "minus.circle")
                     .imageScale(.medium)
                     .fontWeight(.semibold)
-                    .foregroundStyle(howMany == 1 ? .gray : .blue)
+                    .foregroundStyle(howMany == 2 ? .gray : .blue)
             }
             .sensoryFeedback(.decrease, trigger: howMany)
+            .disabled(howMany == 2)
             
             Text("\(howMany)x")
                 .font(.system(size: 16))
@@ -190,7 +170,7 @@ struct ReminderHowManyRow: View {
                 .padding(.horizontal, 12)
             
             Button {
-                if howMany < 24 {
+                if howMany < 16 {
                     howMany += 1
                     didChange = true
                 }
@@ -202,20 +182,23 @@ struct ReminderHowManyRow: View {
                     .padding(.trailing)
             }
             .sensoryFeedback(.increase, trigger: howMany)
+            .disabled(howMany == 24)
         }
         .padding(.horizontal, 4)
     }
 }
 
-struct ReminderTimeRow: View {
+//----------------------------------------------------
+
+struct ReminderStartTimeRow: View {
     
-    @Binding var time: Int
-    var context: String
+    @Binding var start: Int
+    @Binding var end: Int //in minute
     @Binding var didChange: Bool
     
     var body: some View {
         HStack {
-            Text(context)
+            Text("Start at")
                 .font(.system(size: 16))
                 .fontWeight(.regular)
                 .padding(.horizontal)
@@ -223,42 +206,144 @@ struct ReminderTimeRow: View {
             Spacer()
             
             Button {
-                if time > 0 {
-                    time -= 1
+                if validMinus() {
+                    start -= TimeDecree
                     didChange = true
                 }
             } label: {
                 Image(systemName: "minus.circle")
                     .imageScale(.medium)
                     .fontWeight(.semibold)
-                    .foregroundStyle(time == 0 ? .gray : .blue)
+                    .foregroundStyle(start >= TimeDecree ? .blue : .gray)
             }
-            .sensoryFeedback(.increase, trigger: time)
+            .disabled(!validMinus())
+            .sensoryFeedback(.increase, trigger: start)
             
-            Text("\(time):00 \(timeFrame())")
+            Text(displayTime())
                 .font(.system(size: 16))
                 .fontWeight(.regular)
                 .frame(width: 72)
                 .padding(.horizontal, 12)
             
             Button {
-                if time < 11 {
-                    time += 1
+                if validPlus() {
+                    start += TimeDecree
                     didChange = true
                 }
             } label: {
                 Image(systemName: "plus.circle")
                     .imageScale(.medium)
                     .fontWeight(.semibold)
-                    .foregroundStyle(time == 11 ? .gray : .blue)
+                    .foregroundStyle(start < 86400 - TimeDecree ? .blue : .gray)
                     .padding(.trailing)
             }
-            .sensoryFeedback(.increase, trigger: time)
+            .disabled(!validPlus())
+            .sensoryFeedback(.increase, trigger: start)
         }
         .padding(.horizontal, 4)
     }
     
-    private func timeFrame() -> String {
-        return context == "Start at" ? "AM" : "PM"
+    private func displayTime() -> String {
+        let hour = start / 3600
+        let min = (start % 3600) / 60
+        let minStr = min < 10 ? "0\(min)" : "\(min)"
+        
+        if hour < 12 {
+            return "\(hour):\(minStr) AM"
+        } else {
+            if hour-12 == 0 {
+                return "12:\(minStr) PM"
+            } else {
+                return "\(hour-12):\(minStr) PM"
+            }
+        }
     }
+    
+    private func validPlus() -> Bool {
+        return start < end - TimeDecree
+    }
+    
+    private func validMinus() -> Bool {
+        return start >= TimeDecree
+    }
+    
+}
+
+struct ReminderEndTimeRow: View {
+    
+    @Binding var start: Int
+    @Binding var end: Int
+    @Binding var didChange: Bool
+    
+    var body: some View {
+        HStack {
+            Text("End at")
+                .font(.system(size: 16))
+                .fontWeight(.regular)
+                .padding(.horizontal)
+            
+            Spacer()
+            
+            Button {
+                if validMinus() {
+                    end -= TimeDecree
+                    didChange = true
+                }
+            } label: {
+                Image(systemName: "minus.circle")
+                    .imageScale(.medium)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(validMinus() ? .blue : .gray)
+            }
+            .disabled(!validMinus())
+            .sensoryFeedback(.increase, trigger: end)
+            
+            Text(displayTime())
+                .font(.system(size: 16))
+                .fontWeight(.regular)
+                .frame(width: 72)
+                .padding(.horizontal, 12)
+            
+            Button {
+                if validPlus() {
+                    end += TimeDecree
+                    didChange = true
+                }
+            } label: {
+                Image(systemName: "plus.circle")
+                    .imageScale(.medium)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(validPlus() ? .blue : .gray)
+                    .padding(.trailing)
+            }
+            .disabled(!validPlus())
+            .sensoryFeedback(.increase, trigger: end)
+        }
+        .padding(.horizontal, 4)
+    }
+    
+    private func displayTime() -> String {
+        let hour = end / 3600
+        let min = (end % 3600) / 60
+        let minStr = min < 10 ? "0\(min)" : "\(min)"
+        
+        if hour < 12 {
+            return "\(hour):\(minStr) AM"
+        } else {
+            if hour-12 == 0 {
+                return "12:\(minStr) PM"
+            } else {
+                return "\(hour-12):\(minStr) PM"
+            }
+        }
+    }
+    
+    private func validPlus() -> Bool {
+        return end < 86400 - TimeDecree
+    }
+    
+    private func validMinus() -> Bool {
+        return start < end - TimeDecree
+    }
+    
 }

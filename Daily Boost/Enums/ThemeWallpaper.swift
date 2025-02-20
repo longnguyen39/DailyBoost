@@ -9,7 +9,7 @@ import Foundation
 
 enum ThemeWallpaper: CaseIterable {
     case mostPopular
-    case sceneAnimated //like wall1
+    case sceneAnimated //like anime
     case season // seasons + xmas + halloween + lunar
     case space
     case beach
@@ -40,7 +40,21 @@ enum ThemeWallpaper: CaseIterable {
         case .architecture:
             return "Architecture"
         case .scene:
-            return "Scenary"
+            return "Scenary and Objects"
         }
     }
 }
+
+/*
+ --case mostPopular
+ --case sceneAnimated //like anime
+ case season // seasons + xmas + halloween + lunar
+ --case space
+ case beach
+ case mountain
+ case scene //sunset, sunrise, nature, ecllipse
+ case texture
+ case plain
+ --case architecture //eiffel
+
+ */

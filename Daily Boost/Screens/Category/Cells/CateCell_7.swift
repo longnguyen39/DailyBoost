@@ -14,8 +14,10 @@ struct CateCell: View {
     let frameDim: CGFloat = 88
     
     var cateP: String
+    @Binding var user: User
     @Binding var chosenCatePathArr: [String]
-    @Binding var showCateQuotes: Bool
+    
+    @State var showCateQuotes: Bool = false
     
     
     var body: some View {
@@ -59,24 +61,26 @@ struct CateCell: View {
                 Text(cateP.getCate()) //caption
                     .font(.caption)
                     .fontWeight(.regular)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.9)
                     .padding(.all, 8)
                     .frame(width: frameDim + 16)
                     .lineLimit(1)
             }
             
         }
-        .sensoryFeedback(.increase, trigger: chosenCatePathArr)
+        .sensoryFeedback(.selection, trigger: chosenCatePathArr)
+        .sensoryFeedback(.increase, trigger: showCateQuotes)
         .onTapGesture {
+            showCateQuotes.toggle()
+        }
+        .onLongPressGesture(minimumDuration: 0.3) { //0.3s
             withAnimation {
                 pickCate()
             }
         }
-        .onLongPressGesture(minimumDuration: 0.3) { //0.3s
-            showCateQuotes.toggle()
-            UserDefaults.standard.set(cateP, forKey: CATEPATH_CATEQUOTES)
+        .fullScreenCover(isPresented: $showCateQuotes) {
+            CateQuotesScreen(catePath: cateP, user: $user, showCateQuotes: $showCateQuotes, chosenCatePathArr: $chosenCatePathArr)
         }
-        
     }
     
 //MARK: - Functions
@@ -90,8 +94,8 @@ struct CateCell: View {
         if chosenCatePathArr.count > 1 {
             //de-select picked cateP
             for catePh in chosenCatePathArr {
-                if catePh.getCate() == cateP.getCate() {
-                    chosenCatePathArr = chosenCatePathArr.filter() { $0.getCate() != cateP.getCate()
+                if catePh == cateP {
+                    chosenCatePathArr = chosenCatePathArr.filter() { $0 != cateP
                     }
                     didRemove = true
                     break
@@ -120,5 +124,5 @@ struct CateCell: View {
 }
 
 #Preview {
-    CateCell(cateP: "Haha", chosenCatePathArr: .constant(Quote.purposeStrArr), showCateQuotes: .constant(false))
+    CateCell(cateP: "Haha", user: .constant(User.mockData), chosenCatePathArr: .constant(Quote.purposeStrArr))
 }
