@@ -239,7 +239,7 @@ func ANewQ(catePArr: [String]) async -> Quote {
 func streakTextMessage() -> String {
     let currentStreak = UserDefaults.standard.object(forKey: UserDe.currentStreak) as? Int ?? 1
     if currentStreak == 1 {
-        return "Great job reading Daily Boost quotes. Let's go for 3 days."
+        return "You did a great job reading Daily Boost quotes. Let's go for 3 days."
     } else if currentStreak < 3 {
         return "You are on your way to a 3-day commitment."
     } else if currentStreak < 7 {

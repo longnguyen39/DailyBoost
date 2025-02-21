@@ -44,7 +44,7 @@ class HomeScreenVM: ObservableObject {
         return quote
     }
     
-    func loadHomeScreen() async {
+    func loadHomeScreen() async { //open after refreshing app
         
         if userID != nil {
             print("DEBUG_1: userID is \(userID ?? "nil")")
@@ -73,8 +73,9 @@ class HomeScreenVM: ObservableObject {
                 showStreak = true
                 await setAllNoti(user: user)
             } else {
-                checkStreak()
-                if getDiffsDay() != 0 {
+                let diffsDay = getDiffsDay()
+                checkStreak(diffsDay: diffsDay)
+                if diffsDay != 0 {
                     await setAllNoti(user: user)
                 } else {
                     print("DEBUG_1: same day, no new noti.")
@@ -107,7 +108,7 @@ class HomeScreenVM: ObservableObject {
         }
         
         let quoteID = "\(quote.title)/\(quote.category)#\(quote.orderNo)"
-        print("DEBUG_1: presenting quote: \(quoteID)")
+        print("\nDEBUG_1: presenting quote: \(quoteID)")
         
         //configure histArr
         await configHistArr(quote: quote, id: quoteID)
@@ -140,11 +141,12 @@ class HomeScreenVM: ObservableObject {
         if notiQPath.isEmpty {
             await loadHomeScreen() //check streak, set all noti
             
-        } else { //app opens from noti
+        } else { //app opens from noti (after refreshing)
             try? await Task.sleep(nanoseconds: 1_000_000_000)//delay 1s
-            checkStreak()
+            let diffsDay = getDiffsDay()
+            checkStreak(diffsDay: diffsDay)
             
-            if getDiffsDay() != 0 {
+            if diffsDay != 0 {
                 await setAllNoti(user: user)
             } else {
                 print("DEBUG_1: same day, zero new noti set.")
@@ -245,10 +247,9 @@ class HomeScreenVM: ObservableObject {
         }
     }
     
-    func checkStreak() {
+    func checkStreak(diffsDay: Int) {
         print("DEBUG_1: checking streak...")
         var currentStreak = UserDefaults.standard.object(forKey: UserDe.currentStreak) as? Int ?? 1
-        let diffsDay = getDiffsDay()
         
         if diffsDay == 1 {
             //show continue streak

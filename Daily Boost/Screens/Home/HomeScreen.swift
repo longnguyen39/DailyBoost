@@ -116,6 +116,9 @@ struct HomeScreen: View {
         }
         .onAppear {
             vm.themeUIImage = loadThemeImgFromDisk(path: UserDe.Local_ThemeImg)
+            NotificationManager.shared.requestAuthorization { granted in
+                print("DEBUG_HomeScr: noti granted - \(granted)")
+            }
         }
         .onChange(of: scenePhase) {
             print("DEBUG_HomeScr: \(scenePhase)")
@@ -124,8 +127,9 @@ struct HomeScreen: View {
                     if !vm.user.userID.isEmpty {
                         print("DEBUG_HomeScr: check streak and set all noti...")
                         try? await Task.sleep(nanoseconds: 1_000_000_000)//delay 1s
-                        vm.checkStreak()
-                        if vm.getDiffsDay() != 0 {
+                        let diffsDay = vm.getDiffsDay()
+                        vm.checkStreak(diffsDay: diffsDay)
+                        if diffsDay != 0 {
                             await setAllNoti(user: vm.user)
                         } else {
                             print("DEBUG_HomeScr: app open same day, no new noti set.")

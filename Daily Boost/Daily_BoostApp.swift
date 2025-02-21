@@ -39,9 +39,9 @@ struct Daily_BoostApp: App {
     
     var body: some Scene {
         WindowGroup {
-//            MainScreen()
-//                .environment(delegate)
-            UploadScreen()
+            MainScreen()
+                .environment(delegate)
+//            UploadScreen()
         }
     }
 }
